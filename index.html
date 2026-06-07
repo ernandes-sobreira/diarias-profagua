@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Sistema de Diarias - ProfAgua / UNEMAT</title>
+<title>Sistema de Diárias — ProfÁgua / UNEMAT</title>
 <style>
 :root{--az:#1a4f8a;--aze:#0f3060;--azm:#2169c4;--azl:#e8f0fa;--azb:#b8d0ee;--br:#fff;--ct:#1e2a3a;--cs:#4a5a6e;--cl:#f5f7fb}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -114,14 +114,14 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
     </div>
     <div class="hdiv"></div>
     <div class="htx">
-      <h1>Sistema de Diarias - ProfAgua / UNEMAT</h1>
-      <p>Geracao automatica de formularios e relatorios oficiais</p>
+      <h1>Sistema de Diárias — ProfÁgua / UNEMAT</h1>
+      <p>Geração automática de formulários e relatórios oficiais</p>
     </div>
   </div>
   <nav id="nav" style="display:none">
     <button class="on" onclick="aba('inicio')">Inicio</button>
-    <button onclick="aba('diaria')">Nova Diaria</button>
-    <button onclick="aba('relatorio')">Novo Relatorio</button>
+    <button onclick="aba('diaria')">Nova Diária</button>
+    <button onclick="aba('relatorio')">Novo Relatório</button>
     <button onclick="aba('docs')">Meus Documentos</button>
     <button id="btn_admin" style="display:none" onclick="aba('admin')">&#128274; Admin</button>
     <button class="sair" onclick="sair()">Sair</button>
@@ -139,7 +139,7 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
         <img id="lL1" alt="UNEMAT"/>
         <img id="lL2" alt="FUNDUNESP"/>
       </div>
-      <h2>Sistema de Diarias ProfAgua</h2>
+      <h2>Sistema de Diárias ProfÁgua</h2>
       <p style="margin-bottom:24px">Acesse com sua conta Google institucional ou pessoal. Seus dados ficam salvos com segurança na nuvem.</p>
       <button class="btn bp" id="btnGoogle" onclick="loginGoogle()" style="width:100%;justify-content:center;padding:13px;font-size:.97rem;gap:10px">
         <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.6 33.4 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.7-8 19.7-20 0-1.3-.1-2.7-.1-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 16 18.9 13 24 13c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34 6.5 29.3 4 24 4 16.3 4 9.7 8.4 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.8 13.6-4.7l-6.3-5.2C29.4 35.6 26.8 36.4 24 36.4c-5.2 0-9.6-3.5-11.2-8.3l-6.5 5C9.6 39.5 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.8 2.3-2.3 4.3-4.3 5.7l6.3 5.2c3.7-3.4 5.7-8.5 6-13.9.1-1.7 0-3.3-.3-5z"/></svg>
@@ -159,8 +159,8 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
     <div style="color:#1d4ed8;font-size:.88rem">Seus dados sao salvos com segurança na nuvem vinculados à sua conta Google.</div>
   </div>
   <div class="opcoes">
-    <div class="ocard" onclick="aba('diaria')"><div class="oi">&#128203;</div><h3>Nova Diaria</h3><p>Solicitar pagamento de diarias</p></div>
-    <div class="ocard" onclick="aba('relatorio')"><div class="oi">&#128196;</div><h3>Novo Relatorio</h3><p>Relatorio de viagem pos-missao</p></div>
+    <div class="ocard" onclick="aba('diaria')"><div class="oi">&#128203;</div><h3>Nova Diária</h3><p>Solicitar pagamento de diarias</p></div>
+    <div class="ocard" onclick="aba('relatorio')"><div class="oi">&#128196;</div><h3>Novo Relatório</h3><p>Relatorio de viagem pos-missao</p></div>
     <div class="ocard" onclick="aba('docs')"><div class="oi">&#128193;</div><h3>Meus Documentos</h3><p>Ver, editar e baixar documentos</p></div>
   </div>
   <div class="card"><div class="ctit">Resumo</div><div class="stats" id="stats"></div></div>
@@ -267,7 +267,7 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
 
 <div class="sec" id="s-relatorio">
   <div class="card">
-    <div class="ctit">Vincular a Diaria Salva</div>
+    <div class="ctit">Vincular à Diária Salva</div>
     <p style="font-size:.86rem;color:#4a5a6e;margin-bottom:11px">Selecione uma diaria para preencher automaticamente.</p>
     <div class="f"><label>Diaria salva</label>
       <select id="r_sel" onchange="vincular()">
@@ -324,8 +324,8 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
 </div>
 
 <div class="sec" id="s-docs">
-  <div class="card"><div class="ctit">Solicitacoes de Diarias</div><div id="lstD"><div class="vz">Nenhuma diaria salva.</div></div></div>
-  <div class="card"><div class="ctit">Relatorios de Viagem</div><div id="lstR"><div class="vz">Nenhum relatorio salvo.</div></div></div>
+  <div class="card"><div class="ctit">Solicitações de Diárias</div><div id="lstD"><div class="vz">Nenhuma diaria salva.</div></div></div>
+  <div class="card"><div class="ctit">Relatórios de Viagem</div><div id="lstR"><div class="vz">Nenhum relatório salvo.</div></div></div>
 </div>
 
 
@@ -693,8 +693,9 @@ async function gerarDocxD(d){
     var zip=await JSZip.loadAsync(base64ToUint8(TD));
     var xml=await zip.file('word/document.xml').async('string');
     var mapa={PROC:d.proc,NOME:d.nome,UNID:d.unid,DEPT:d.dept,MATR:d.matr,RG:d.rg,CPF:d.cpf,BANCO:d.banco,AGENC:d.agenc,CONTA:d.conta,END:d.end,BAIR:d.bair,CIDA:d.cida,UF:d.uf,CEP:d.cep,TEL:d.tel,EMAIL:d.email,MES:d.mes,CARGO:d.cargo,VP:d.vp,VM:d.vm,TA:d.tA,TB:d.tB,TOTAL:d.total,JUST:d.just,DATA:d.data};
-    ['PA1','PA2','PA3'].forEach(function(pfx,i){var l=d.lP[i]||{orig:'',saida:'',hsaida:'',dest:'',ret:'',hret:'',qtd:'',tot:''};mapa[pfx+'_ORIG']=l.orig;mapa[pfx+'_SAI']=l.saida;mapa[pfx+'_HSA']=l.hsaida;mapa[pfx+'_DES']=l.dest;mapa[pfx+'_RET']=l.ret;mapa[pfx+'_HRE']=l.hret;mapa[pfx+'_QTD']=l.qtd;mapa[pfx+'_TOT']=l.tot;});
-    ['PB1','PB2'].forEach(function(pfx,i){var l=d.lM[i]||{orig:'',saida:'',hsaida:'',dest:'',ret:'',hret:'',qtd:'',tot:''};mapa[pfx+'_ORIG']=l.orig;mapa[pfx+'_SAI']=l.saida;mapa[pfx+'_HSA']=l.hsaida;mapa[pfx+'_DES']=l.dest;mapa[pfx+'_RET']=l.ret;mapa[pfx+'_HRE']=l.hret;mapa[pfx+'_QTD']=l.qtd;mapa[pfx+'_TOT']=l.tot;});
+    var lP=d.lP||[]; var lM=d.lM||[];
+    ['PA1','PA2','PA3'].forEach(function(pfx,i){var l=lP[i]||{orig:'',saida:'',hsaida:'',dest:'',ret:'',hret:'',qtd:'',tot:''};mapa[pfx+'_ORIG']=l.orig;mapa[pfx+'_SAI']=l.saida;mapa[pfx+'_HSA']=l.hsaida;mapa[pfx+'_DES']=l.dest;mapa[pfx+'_RET']=l.ret;mapa[pfx+'_HRE']=l.hret;mapa[pfx+'_QTD']=l.qtd;mapa[pfx+'_TOT']=l.tot;});
+    ['PB1','PB2'].forEach(function(pfx,i){var l=lM[i]||{orig:'',saida:'',hsaida:'',dest:'',ret:'',hret:'',qtd:'',tot:''};mapa[pfx+'_ORIG']=l.orig;mapa[pfx+'_SAI']=l.saida;mapa[pfx+'_HSA']=l.hsaida;mapa[pfx+'_DES']=l.dest;mapa[pfx+'_RET']=l.ret;mapa[pfx+'_HRE']=l.hret;mapa[pfx+'_QTD']=l.qtd;mapa[pfx+'_TOT']=l.tot;});
     zip.file('word/document.xml',subst(xml,mapa));
     var blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',compression:'DEFLATE'});
     dlBlob(blob,'Diaria_'+(d.nome||'').replace(/\s+/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.docx');
@@ -864,7 +865,7 @@ async function renderListas(){
         '<button class="btn bg" style="padding:6px 12px;font-size:.79rem" onclick="pdfR(\''+r.id+'\')">PDF</button>'+
         '<button class="btn bp" style="padding:6px 12px;font-size:.79rem;background:#2169c4" onclick="wdR(\''+r.id+'\')">Word</button>'+
         '<button class="brem" onclick="del(\''+r.id+'\',\'relatorios\')">X</button></div></div>';
-    }).join(''):'<div class="vz">Nenhum relatorio salvo.</div>';
+    }).join(''):'<div class="vz">Nenhum relatório salvo.</div>';
   }catch(e){
     document.getElementById('lstD').innerHTML='<div class="vz">Erro ao carregar: '+e.message+'</div>';
   }
@@ -1171,7 +1172,7 @@ function mostrarAdmin() {
 
 async function carregarAdmin() {
   var lista = document.getElementById('admin_lista');
-  lista.innerHTML = '<div class="vz">Carregando todas as solicitacoes...</div>';
+  lista.innerHTML = '<div class="vz">Carregando todas as solicitações...</div>';
   try {
     var snap = await DB.ref('usuarios').once('value');
     var todos = snap.val() || {};
@@ -1190,7 +1191,7 @@ async function carregarAdmin() {
     });
     todasDiarias.sort(function(a,b){ return (b.ts||'').localeCompare(a.ts||''); });
     if (!todasDiarias.length) {
-      lista.innerHTML = '<div class="vz">Nenhuma solicitacao encontrada.</div>';
+      lista.innerHTML = '<div class="vz">Nenhuma solicitação encontrada.</div>';
       return;
     }
     lista.innerHTML = '';
@@ -1201,7 +1202,7 @@ async function carregarAdmin() {
         ? '<span class="status-ok">Enviado ao ProfAgua em ' + (d.data_envio||'').slice(0,10) + '</span>'
         : '<span class="status-pen">Aguardando envio</span>';
       var pdfTxt = d._tem_pdf
-        ? '<span style="color:#166534">PDF assinado disponivel</span>'
+        ? '<span style="color:#166534">PDF assinado disponível</span>'
         : '<span style="color:#92400e">Sem PDF assinado</span>';
       div.innerHTML = '<h4>' + (d.nome||d._usuario_nome||'') + ' - ' + (d.mes||'') + '</h4>' +
         '<div class="meta">Valor: ' + (d.total||'') + ' | Destino: ' + (d._dest||'') + ' | Salvo: ' + (d.ts||'').slice(0,10) + '</div>' +
