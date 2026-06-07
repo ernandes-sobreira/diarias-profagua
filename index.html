@@ -763,6 +763,8 @@ function gerarPDFR(d){
   dlBlob(new Blob([html],{type:'text/html;charset=utf-8'}),'PDF_Relatorio_'+(d.benef||'').replace(/\s+/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.html');
   tk('Arquivo HTML baixado! Abra no Chrome: Ctrl+P > Salvar como PDF','inf');
 }
+</script>
+
 <div id="ajuda-btn" onclick="toggleAjuda()">❓ AJUDA</div>
 
 <div id="ajuda-panel">
@@ -1438,7 +1440,6 @@ document.addEventListener('click', function(e) {
   }
 });
 
-</script>
 
 <div id="ajuda-btn" onclick="toggleAjuda()">❓ AJUDA</div>
 
