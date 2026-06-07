@@ -704,15 +704,7 @@ async function gerarDocxR(d){
 function gerarPDFD(d){
   var rows=function(ls){return ls.map(function(r){return '<tr><td>'+r.orig+'</td><td>'+r.saida+'</td><td>'+r.hsaida+'</td><td>'+r.dest+'</td><td>'+r.ret+'</td><td>'+r.hret+'</td><td>'+r.qtd+'</td><td><b>'+r.tot+'</b></td></tr>';}).join('');};
   var st='body{font-family:Arial,sans-serif;font-size:9pt;margin:8mm 10mm;color:#111;line-height:1.4}.hdr{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #1a4f8a;padding-bottom:6px;margin-bottom:8px}.hdr img{height:36px;object-fit:contain}.hc{text-align:center;font-size:7.5pt;font-weight:bold;color:#0f3060;line-height:1.35}h2{text-align:center;font-size:11.5pt;color:#0f3060;margin:5px 0 2px}.proc{text-align:center;color:#cc0000;margin-bottom:7px}table{width:100%;border-collapse:collapse;margin-bottom:6px;font-size:8pt}td,th{border:1px solid #888;padding:3px 5px}th{background:#1a4f8a;color:#fff;font-size:7.5pt;text-align:left}.tot{display:flex;justify-content:space-between;font-weight:bold;background:#e8f0fa;border:1px solid #93c5fd;padding:4px 8px;margin:5px 0;font-size:9pt}.jb{border:1px solid #888;min-height:40px;padding:5px;font-size:8.5pt;margin-bottom:6px}.as{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;font-size:8pt;text-align:center}.al2{border-top:1.5px solid #333;padding-top:3px;margin-top:20px}.at{text-align:center;font-size:7.5pt;font-weight:bold;color:#cc0000;margin-top:7px}@media print{body{margin:5mm}}';
-  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>'+st+'
-.alerta-prazo{background:#fef3c7;border:2px solid #f59e0b;border-radius:8px;padding:10px 14px;margin:8px 0;font-size:.88rem;color:#92400e;display:none}
-.alerta-prazo.err{background:#fee2e2;border-color:#ef4444;color:#7f1d1d;display:block}
-.alerta-prazo.warn{background:#fef3c7;border-color:#f59e0b;color:#92400e;display:block}
-.alerta-prazo.ok{background:#dcfce7;border-color:#22c55e;color:#14532d;display:block}
-.upload-zone{border:2px dashed #93c5fd;border-radius:10px;padding:18px;text-align:center;background:#eff6ff;margin:10px 0;cursor:pointer}
-.upload-zone:hover{border-color:#2169c4;background:#dbeafe}
-.pdf-salvo{background:#dcfce7;border:1.5px solid #86efac;border-radius:8px;padding:10px 14px;margin:8px 0;font-size:.88rem;color:#14532d;display:none}
-</style></head>'+
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>'+st+'</style></head>'+
     '<body onload="window.print()">'+
     '<div class="hdr"><img src="'+LU+'"/>'+
     '<div class="hc">GOVERNO DO ESTADO DE MATO GROSSO<br>UNIVERSIDADE DO ESTADO DE MATO GROSSO - UNEMAT<br>PRO-REITORIA DE PESQUISA E POS-GRADUACAO<br>ProfAgua - Gestao e Regulacao de Recursos Hidricos</div>'+
@@ -740,15 +732,7 @@ function gerarPDFD(d){
 
 function gerarPDFR(d){
   var st='body{font-family:Arial,sans-serif;font-size:10pt;margin:10mm 13mm;color:#111;line-height:1.65}.hdr{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #1a4f8a;padding-bottom:8px;margin-bottom:12px}.hdr img{height:38px;object-fit:contain}.hc{text-align:center;font-size:8pt;font-weight:bold;color:#0f3060;line-height:1.35}h2{text-align:center;font-size:14pt;color:#0f3060;margin:5px 0 13px}.u{text-decoration:underline;font-weight:bold}.as{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px}.ab{border:1.5px solid #555;padding:12px;text-align:center;font-size:9pt}@media print{body{margin:6mm}}';
-  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>'+st+'
-.alerta-prazo{background:#fef3c7;border:2px solid #f59e0b;border-radius:8px;padding:10px 14px;margin:8px 0;font-size:.88rem;color:#92400e;display:none}
-.alerta-prazo.err{background:#fee2e2;border-color:#ef4444;color:#7f1d1d;display:block}
-.alerta-prazo.warn{background:#fef3c7;border-color:#f59e0b;color:#92400e;display:block}
-.alerta-prazo.ok{background:#dcfce7;border-color:#22c55e;color:#14532d;display:block}
-.upload-zone{border:2px dashed #93c5fd;border-radius:10px;padding:18px;text-align:center;background:#eff6ff;margin:10px 0;cursor:pointer}
-.upload-zone:hover{border-color:#2169c4;background:#dbeafe}
-.pdf-salvo{background:#dcfce7;border:1.5px solid #86efac;border-radius:8px;padding:10px 14px;margin:8px 0;font-size:.88rem;color:#14532d;display:none}
-</style></head>'+
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>'+st+'</style></head>'+
     '<body onload="window.print()">'+
     '<div class="hdr"><img src="'+LU+'"/>'+
     '<div class="hc">GOVERNO DO ESTADO DE MATO GROSSO<br>UNIVERSIDADE DO ESTADO DE MATO GROSSO - UNEMAT<br>PRO-REITORIA DE PESQUISA E POS-GRADUACAO<br>ProfAgua - Gestao e Regulacao de Recursos Hidricos</div>'+
