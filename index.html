@@ -716,18 +716,12 @@ async function gerarDocxR(d){
 }
 
 // ============================================================
-// GERAR PDF (HTML para impressão)
+// GERAR PDF (HTML para impressao)
 // ============================================================
 function gerarPDFD(d){
   var rows=function(ls){return ls.map(function(r){return '<tr><td>'+r.orig+'</td><td>'+r.saida+'</td><td>'+r.hsaida+'</td><td>'+r.dest+'</td><td>'+r.ret+'</td><td>'+r.hret+'</td><td>'+r.qtd+'</td><td><b>'+r.tot+'</b></td></tr>';}).join('');};
   var st='body{font-family:Arial,sans-serif;font-size:9pt;margin:8mm 10mm;color:#111;line-height:1.4}.hdr{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #1a4f8a;padding-bottom:6px;margin-bottom:8px}.hdr img{height:36px;object-fit:contain}.hc{text-align:center;font-size:7.5pt;font-weight:bold;color:#0f3060;line-height:1.35}h2{text-align:center;font-size:11.5pt;color:#0f3060;margin:5px 0 2px}.proc{text-align:center;color:#cc0000;margin-bottom:7px}table{width:100%;border-collapse:collapse;margin-bottom:6px;font-size:8pt}td,th{border:1px solid #888;padding:3px 5px}th{background:#1a4f8a;color:#fff;font-size:7.5pt;text-align:left}.tot{display:flex;justify-content:space-between;font-weight:bold;background:#e8f0fa;border:1px solid #93c5fd;padding:4px 8px;margin:5px 0;font-size:9pt}.jb{border:1px solid #888;min-height:40px;padding:5px;font-size:8.5pt;margin-bottom:6px}.as{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;font-size:8pt;text-align:center}.al2{border-top:1.5px solid #333;padding-top:3px;margin-top:20px}.at{text-align:center;font-size:7.5pt;font-weight:bold;color:#cc0000;margin-top:7px}@media print{body{margin:5mm}}';
-  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>'+st+'
-.admin-card{border:1.5px solid #b8d0ee;border-radius:10px;padding:14px 16px;margin-bottom:12px;background:#fff}
-.admin-card h4{color:#1a4f8a;font-size:.95rem;margin-bottom:4px}
-.admin-card .meta{font-size:.8rem;color:#4a5a6e;margin-bottom:8px}
-.admin-card .status-ok{color:#166534;font-weight:700}
-.admin-card .status-pen{color:#92400e;font-weight:700}
-</style></head>'+
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>'+st+'</style></head>'+
     '<body onload="window.print()">'+
     '<div class="hdr"><img src="'+LU+'"/>'+
     '<div class="hc">GOVERNO DO ESTADO DE MATO GROSSO<br>UNIVERSIDADE DO ESTADO DE MATO GROSSO - UNEMAT<br>PRO-REITORIA DE PESQUISA E POS-GRADUACAO<br>ProfAgua - Gestao e Regulacao de Recursos Hidricos</div>'+
@@ -750,18 +744,12 @@ function gerarPDFD(d){
     '<p class="at">ATENCAO: SAO PROIBIDAS RASURAS NA PRESENTE SOLICITACAO</p>'+
     '</body></html>';
   dlBlob(new Blob([html],{type:'text/html;charset=utf-8'}),'PDF_Diaria_'+(d.nome||'').replace(/\s+/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.html');
-  tk('Arquivo HTML baixado! Abra no Chrome → Ctrl+P → Salvar como PDF','inf');
+  tk('Arquivo HTML baixado! Abra no Chrome: Ctrl+P > Salvar como PDF','inf');
 }
 
 function gerarPDFR(d){
   var st='body{font-family:Arial,sans-serif;font-size:10pt;margin:10mm 13mm;color:#111;line-height:1.65}.hdr{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #1a4f8a;padding-bottom:8px;margin-bottom:12px}.hdr img{height:38px;object-fit:contain}.hc{text-align:center;font-size:8pt;font-weight:bold;color:#0f3060;line-height:1.35}h2{text-align:center;font-size:14pt;color:#0f3060;margin:5px 0 13px}.u{text-decoration:underline;font-weight:bold}.as{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px}.ab{border:1.5px solid #555;padding:12px;text-align:center;font-size:9pt}@media print{body{margin:6mm}}';
-  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>'+st+'
-.admin-card{border:1.5px solid #b8d0ee;border-radius:10px;padding:14px 16px;margin-bottom:12px;background:#fff}
-.admin-card h4{color:#1a4f8a;font-size:.95rem;margin-bottom:4px}
-.admin-card .meta{font-size:.8rem;color:#4a5a6e;margin-bottom:8px}
-.admin-card .status-ok{color:#166534;font-weight:700}
-.admin-card .status-pen{color:#92400e;font-weight:700}
-</style></head>'+
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>'+st+'</style></head>'+
     '<body onload="window.print()">'+
     '<div class="hdr"><img src="'+LU+'"/>'+
     '<div class="hc">GOVERNO DO ESTADO DE MATO GROSSO<br>UNIVERSIDADE DO ESTADO DE MATO GROSSO - UNEMAT<br>PRO-REITORIA DE PESQUISA E POS-GRADUACAO<br>ProfAgua - Gestao e Regulacao de Recursos Hidricos</div>'+
@@ -778,7 +766,7 @@ function gerarPDFR(d){
     '<div class="ab"><br><br><b>Assinatura do Coordenador da IES</b><br>Nome: '+d.coord+'<br>IES: '+d.ies+'</div></div>'+
     '</body></html>';
   dlBlob(new Blob([html],{type:'text/html;charset=utf-8'}),'PDF_Relatorio_'+(d.benef||'').replace(/\s+/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.html');
-  tk('Arquivo HTML baixado! Abra no Chrome → Ctrl+P → Salvar como PDF','inf');
+  tk('Arquivo HTML baixado! Abra no Chrome: Ctrl+P > Salvar como PDF','inf');
 }
 
 // ============================================================
@@ -868,7 +856,7 @@ async function renderListas(){
 
     var lr=await fbLer('relatorios');
     document.getElementById('lstR').innerHTML=lr.length?lr.map(function(r){
-      return '<div class="di"><div><h4>'+r.benef+' → '+r.para+' <span class="tag tagR">Relatorio</span></h4>'+
+      return '<div class="di"><div><h4>'+r.benef+' > '+r.para+' <span class="tag tagR">Relatorio</span></h4>'+
         '<p>'+r.ini+' a '+r.fim+' | '+r.qtd+' diarias | '+r.val+'</p>'+
         '<p style="margin-top:3px">Salvo: '+(r.ts||'').slice(0,10)+'</p></div>'+
         '<div class="dacts">'+
@@ -947,7 +935,7 @@ var EMAILJS_SERVICE = 'service_sutafkf';
 var EMAILJS_TEMPLATE = 'template_inoo1th';
 var EMAILJS_KEY = 'taAiZImA6gXAx-iNI';
 var pdfAssinadoB64 = null; // PDF assinado em base64
-var diáriaAtualId = null;  // ID da diária atual para vincular o PDF
+var diariaAtualId = null;  // ID da diária atual para vincular o PDF
 
 // Inicializar EmailJS
 if (typeof emailjs !== 'undefined') {
@@ -1011,7 +999,7 @@ calcT = function() {
 // ============================================================
 function abrirGovBr() {
   // Primeiro salva a diária se ainda não salvou
-  if (!diáriaAtualId) {
+  if (!diariaAtualId) {
     tk('Salve a diária primeiro antes de assinar.', 'inf');
     return;
   }
@@ -1029,7 +1017,7 @@ function uploadPDFAssinado(input) {
     tk('Selecione um arquivo PDF.', 'err');
     return;
   }
-  if (!diáriaAtualId) {
+  if (!diariaAtualId) {
     tk('Salve a diária primeiro antes de fazer o upload.', 'inf');
     return;
   }
@@ -1043,7 +1031,7 @@ function uploadPDFAssinado(input) {
   reader.onload = function(e) {
     pdfAssinadoB64 = e.target.result; // data:application/pdf;base64,...
     // Salvar no Firebase vinculado à diária
-    DB.ref('usuarios/' + USER.key + '/pdfs_assinados/' + diáriaAtualId).set({
+    DB.ref('usuarios/' + USER.key + '/pdfs_assinados/' + diariaAtualId).set({
       nome: file.name,
       data: new Date().toISOString(),
       pdf: pdfAssinadoB64
@@ -1069,14 +1057,14 @@ async function enviarParaProfagua() {
     tk('Faça o upload do PDF assinado primeiro.', 'err');
     return;
   }
-  if (!diáriaAtualId) {
+  if (!diariaAtualId) {
     tk('Salve a diária primeiro.', 'err');
     return;
   }
 
   // Buscar dados da diária atual
   var lista = await fbLer('diarias');
-  var d = lista.filter(function(x){ return x.id === diáriaAtualId; })[0];
+  var d = lista.filter(function(x){ return x.id === diariaAtualId; })[0];
   if (!d) { tk('Diária não encontrada. Salve novamente.', 'err'); return; }
 
   var dias = calcularDiasAntecedencia() || 0;
@@ -1109,7 +1097,7 @@ async function enviarParaProfagua() {
     await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, params);
     ldgOff();
     // Marcar como enviado no Firebase
-    DB.ref('usuarios/' + USER.key + '/diarias/' + diáriaAtualId).update({
+    DB.ref('usuarios/' + USER.key + '/diarias/' + diariaAtualId).update({
       enviado_profagua: true,
       data_envio: new Date().toISOString()
     });
@@ -1133,7 +1121,7 @@ salvarD = async function(tipo) {
   salvarPerfil();
   try {
     var id = editD || uid();
-    diáriaAtualId = id;
+    diariaAtualId = id;
     await fbSalvar('diarias', id, Object.assign({}, d, {id:id, ts:new Date().toISOString()}));
     editD = id;
     ldgOff();
@@ -1275,14 +1263,14 @@ async function adminVerDiaria(uid, did) {
 // E-MAIL COM LINK (EmailJS só texto)
 // ============================================================
 async function enviarParaProfagua() {
-  if (!diáriaAtualId) { tk('Salve a diária primeiro.', 'err'); return; }
+  if (!diariaAtualId) { tk('Salve a diária primeiro.', 'err'); return; }
 
   var lista = await fbLer('diarias');
-  var d = lista.filter(function(x){ return x.id === diáriaAtualId; })[0];
+  var d = lista.filter(function(x){ return x.id === diariaAtualId; })[0];
   if (!d) { tk('Diária não encontrada. Salve novamente.', 'err'); return; }
 
   // Verificar se tem PDF assinado
-  var snapPDF = await DB.ref('usuarios/' + USER.key + '/pdfs_assinados/' + diáriaAtualId).once('value');
+  var snapPDF = await DB.ref('usuarios/' + USER.key + '/pdfs_assinados/' + diariaAtualId).once('value');
   if (!snapPDF.val()) {
     tk('Faça o upload do PDF assinado primeiro.', 'err');
     return;
@@ -1311,7 +1299,7 @@ async function enviarParaProfagua() {
   try {
     await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, params);
     ldgOff();
-    DB.ref('usuarios/' + USER.key + '/diarias/' + diáriaAtualId).update({
+    DB.ref('usuarios/' + USER.key + '/diarias/' + diariaAtualId).update({
       enviado_profagua: true,
       data_envio: new Date().toISOString()
     });
