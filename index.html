@@ -1203,6 +1203,11 @@ async function del(id,tipo){
 function limD(){if(!confirm('Limpar formulario?'))return;editD=null;diariaAtualId=null;pdfAssinadoB64=null;['d_unid','d_dept','d_matr','d_rg','d_banco','d_agenc','d_conta','d_end','d_bair','d_cida','d_cep','d_tel','d_email','d_cargo','d_vp','d_vm','d_just','d_proc'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});document.getElementById('d_uf').value='MT';document.getElementById('tbP').innerHTML='';document.getElementById('tbM').innerHTML='';iP=0;iM=0;addP();addM();calcT();document.getElementById('pdf_salvo_info').style.display='none';document.getElementById('btn_enviar_profagua').style.display='none';document.getElementById('btn_excluir_pdf').style.display='none';document.getElementById('alerta_prazo').style.display='none';}
 function limR(){if(!confirm('Limpar?'))return;editR=null;['r_de','r_para','r_ini','r_fim','r_qtd','r_val','r_comp','r_obj','r_coord','r_loc'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});}
 
+var EMAILJS_SERVICE = 'service_sutafkf';
+var EMAILJS_TEMPLATE = 'template_inoo1th';
+var EMAILJS_KEY = 'taAiZImA6gXAx-iNI';
+if (typeof emailjs !== 'undefined') { emailjs.init(EMAILJS_KEY); }
+
 function calcularDiasAntecedencia() {
   var primeiraData = null;
   document.querySelectorAll('#tbP tr').forEach(function(tr) {
