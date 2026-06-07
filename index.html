@@ -827,19 +827,26 @@ async function renderListas(){
     var pdfsObj = snapPDFs.val() || {};
     ld.forEach(function(d){ d._tem_pdf = !!pdfsObj[d.id]; });
     document.getElementById('lstD').innerHTML=ld.length?ld.map(function(d){
-      var tagEnvio = d.enviado_profagua
-        ? ' <span style="color:#166534;font-size:.75rem;font-weight:700">✔ Enviado ao ProfÁgua</span>'
+      var stPDF = d._tem_pdf
+        ? '<span style="display:inline-flex;align-items:center;gap:4px;background:#dcfce7;color:#166534;border-radius:6px;padding:2px 8px;font-size:.75rem;font-weight:700">✔ PDF assinado</span>'
+        : '<span style="display:inline-flex;align-items:center;gap:4px;background:#fee2e2;color:#991b1b;border-radius:6px;padding:2px 8px;font-size:.75rem;font-weight:700">✗ Sem PDF assinado</span>';
+      var stEnvio = d.enviado_profagua
+        ? '<span style="display:inline-flex;align-items:center;gap:4px;background:#dcfce7;color:#166534;border-radius:6px;padding:2px 8px;font-size:.75rem;font-weight:700">✔ Enviado ao ProfÁgua</span>'
+        : '<span style="display:inline-flex;align-items:center;gap:4px;background:#fef3c7;color:#92400e;border-radius:6px;padding:2px 8px;font-size:.75rem;font-weight:700">⏳ Não enviado</span>';
+      var btnBaixarPDF = d._tem_pdf
+        ? '<button class="btn" style="padding:6px 12px;font-size:.79rem;background:#166534;color:#fff" onclick="baixarPDFAssinado(\''+d.id+'\')" title="Baixar PDF assinado">⬇ PDF assinado</button>'
         : '';
-      var btnPDF = d._tem_pdf
-        ? '<button class="btn" style="padding:6px 12px;font-size:.79rem;background:#166534;color:#fff" onclick="baixarPDFAssinado(\''+d.id+'\')" title="Baixar PDF assinado">📄 PDF</button>'
-        : '<button class="btn" style="padding:6px 12px;font-size:.79rem;background:#6b7280;color:#fff;cursor:not-allowed" title="Sem PDF assinado" disabled>📄 PDF</button>';
-      return '<div class="di"><div><h4>'+d.nome+' <span class="tag tagD">Diária</span>'+tagEnvio+'</h4>'+
+      return '<div class="di"><div><h4>'+d.nome+' <span class="tag tagD">Diária</span></h4>'+
         '<p>'+(d.just||'').slice(0,65)+'</p>'+
-        '<p style="margin-top:3px">'+d.total+' | '+(d.ts||'').slice(0,10)+'</p></div>'+
+        '<p style="margin-top:3px">'+d.total+' | '+(d.ts||'').slice(0,10)+'</p>'+
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px">'+stPDF+' '+stEnvio+'</div></div>'+
         '<div class="dacts">'+
         '<button class="btn bp" style="padding:6px 12px;font-size:.79rem" onclick="editarD(\''+d.id+'\')">Editar</button>'+
         '<button class="btn bp" style="padding:6px 12px;font-size:.79rem;background:#2169c4" onclick="wdD(\''+d.id+'\')">Word</button>'+
-        btnPDF+
+        btnBaixarPDF+
+        (!d.enviado_profagua && d._tem_pdf
+          ? '<button class="btn" style="padding:6px 12px;font-size:.79rem;background:#dc2626;color:#fff" onclick="enviarDiretoDaLista(\''+d.id+'\')" title="Enviar ao ProfÁgua">✉ Enviar ao ProfÁgua</button>'
+          : '')+
         '<button class="brem" onclick="del(\''+d.id+'\',\'diarias\')">X</button></div></div>';
     }).join(''):'<div class="vz">Nenhuma diaria salva.</div>';
 
@@ -1325,6 +1332,21 @@ async function baixarPDFAssinado(did) {
     ldgOff();
     tk('Erro: ' + e.message, 'err');
   }
+}
+
+async function enviarDiretoDaLista(did) {
+  var lista = await fbLer('diarias');
+  var d = lista.filter(function(x){ return x.id === did; })[0];
+  if (!d) { tk('Diária não encontrada.', 'err'); return; }
+
+  var snapPDF = await DB.ref('usuarios/' + USER.key + '/pdfs_assinados/' + did).once('value');
+  if (!snapPDF.val()) { tk('Faça o upload do PDF assinado primeiro.', 'err'); return; }
+
+  diariaAtualId = did;
+  pdfAssinadoB64 = snapPDF.val().pdf;
+
+  await enviarParaProfagua();
+  renderListas();
 }
 
 </script>
