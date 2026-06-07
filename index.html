@@ -96,6 +96,12 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
 .upload-zone{border:2px dashed #93c5fd;border-radius:10px;padding:18px;text-align:center;background:#eff6ff;margin:10px 0;cursor:pointer}
 .upload-zone:hover{border-color:#2169c4;background:#dbeafe}
 .pdf-salvo{background:#dcfce7;border:1.5px solid #86efac;border-radius:8px;padding:10px 14px;margin:8px 0;font-size:.88rem;color:#14532d;display:none}
+
+.admin-card{border:1.5px solid #b8d0ee;border-radius:10px;padding:14px 16px;margin-bottom:12px;background:#fff}
+.admin-card h4{color:#1a4f8a;font-size:.95rem;margin-bottom:4px}
+.admin-card .meta{font-size:.8rem;color:#4a5a6e;margin-bottom:8px}
+.admin-card .status-ok{color:#166534;font-weight:700}
+.admin-card .status-pen{color:#92400e;font-weight:700}
 </style>
 </head>
 <body>
@@ -117,6 +123,7 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
     <button onclick="aba('diaria')">Nova Diaria</button>
     <button onclick="aba('relatorio')">Novo Relatorio</button>
     <button onclick="aba('docs')">Meus Documentos</button>
+    <button id="btn_admin" style="display:none" onclick="aba('admin')">&#128274; Admin</button>
     <button class="sair" onclick="sair()">Sair</button>
   </nav>
 </header>
@@ -331,6 +338,14 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
     Desenvolvido com auxílio de Inteligência Artificial
   </p>
 </footer>
+
+<div class="sec" id="s-admin">
+  <div class="card">
+    <div class="ctit" style="color:#1a4f8a">&#128274; Painel Administrativo — Todas as Solicitações</div>
+    <div style="margin-bottom:12px;font-size:.88rem;color:#4a5a6e">Visível apenas para administradores do sistema.</div>
+    <div id="admin_lista"><div class="vz">Carregando...</div></div>
+  </div>
+</div>
 </main>
 <div id="toast"></div>
 
@@ -420,6 +435,7 @@ window.addEventListener('DOMContentLoaded', function() {
       document.getElementById('d_nome').value = USER.nome;
       document.getElementById('r_benef').value = USER.nome;
       carregarPerfil();
+      mostrarAdmin();
       aba('inicio');
       if (!document.getElementById('tbP').children.length) addP();
       if (!document.getElementById('tbM').children.length) addM();
@@ -530,11 +546,12 @@ function aba(id) {
   document.querySelectorAll('.sec').forEach(function(s){ s.classList.remove('on'); });
   var el=document.getElementById('s-'+id); if(el) el.classList.add('on');
   document.querySelectorAll('nav button:not(.sair)').forEach(function(b){ b.classList.remove('on'); });
-  var idx={inicio:0,diaria:1,relatorio:2,docs:3};
+  var idx={inicio:0,diaria:1,relatorio:2,docs:3,admin:4};
   var bt=document.querySelectorAll('nav button:not(.sair)')[idx[id]]; if(bt) bt.classList.add('on');
   if(id==='docs') renderListas();
   if(id==='inicio') renderStats();
   if(id==='relatorio') preencheSel();
+  if(id==='admin') carregarAdmin();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -704,7 +721,13 @@ async function gerarDocxR(d){
 function gerarPDFD(d){
   var rows=function(ls){return ls.map(function(r){return '<tr><td>'+r.orig+'</td><td>'+r.saida+'</td><td>'+r.hsaida+'</td><td>'+r.dest+'</td><td>'+r.ret+'</td><td>'+r.hret+'</td><td>'+r.qtd+'</td><td><b>'+r.tot+'</b></td></tr>';}).join('');};
   var st='body{font-family:Arial,sans-serif;font-size:9pt;margin:8mm 10mm;color:#111;line-height:1.4}.hdr{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #1a4f8a;padding-bottom:6px;margin-bottom:8px}.hdr img{height:36px;object-fit:contain}.hc{text-align:center;font-size:7.5pt;font-weight:bold;color:#0f3060;line-height:1.35}h2{text-align:center;font-size:11.5pt;color:#0f3060;margin:5px 0 2px}.proc{text-align:center;color:#cc0000;margin-bottom:7px}table{width:100%;border-collapse:collapse;margin-bottom:6px;font-size:8pt}td,th{border:1px solid #888;padding:3px 5px}th{background:#1a4f8a;color:#fff;font-size:7.5pt;text-align:left}.tot{display:flex;justify-content:space-between;font-weight:bold;background:#e8f0fa;border:1px solid #93c5fd;padding:4px 8px;margin:5px 0;font-size:9pt}.jb{border:1px solid #888;min-height:40px;padding:5px;font-size:8.5pt;margin-bottom:6px}.as{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;font-size:8pt;text-align:center}.al2{border-top:1.5px solid #333;padding-top:3px;margin-top:20px}.at{text-align:center;font-size:7.5pt;font-weight:bold;color:#cc0000;margin-top:7px}@media print{body{margin:5mm}}';
-  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>'+st+'</style></head>'+
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>'+st+'
+.admin-card{border:1.5px solid #b8d0ee;border-radius:10px;padding:14px 16px;margin-bottom:12px;background:#fff}
+.admin-card h4{color:#1a4f8a;font-size:.95rem;margin-bottom:4px}
+.admin-card .meta{font-size:.8rem;color:#4a5a6e;margin-bottom:8px}
+.admin-card .status-ok{color:#166534;font-weight:700}
+.admin-card .status-pen{color:#92400e;font-weight:700}
+</style></head>'+
     '<body onload="window.print()">'+
     '<div class="hdr"><img src="'+LU+'"/>'+
     '<div class="hc">GOVERNO DO ESTADO DE MATO GROSSO<br>UNIVERSIDADE DO ESTADO DE MATO GROSSO - UNEMAT<br>PRO-REITORIA DE PESQUISA E POS-GRADUACAO<br>ProfAgua - Gestao e Regulacao de Recursos Hidricos</div>'+
@@ -732,7 +755,13 @@ function gerarPDFD(d){
 
 function gerarPDFR(d){
   var st='body{font-family:Arial,sans-serif;font-size:10pt;margin:10mm 13mm;color:#111;line-height:1.65}.hdr{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #1a4f8a;padding-bottom:8px;margin-bottom:12px}.hdr img{height:38px;object-fit:contain}.hc{text-align:center;font-size:8pt;font-weight:bold;color:#0f3060;line-height:1.35}h2{text-align:center;font-size:14pt;color:#0f3060;margin:5px 0 13px}.u{text-decoration:underline;font-weight:bold}.as{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px}.ab{border:1.5px solid #555;padding:12px;text-align:center;font-size:9pt}@media print{body{margin:6mm}}';
-  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>'+st+'</style></head>'+
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>'+st+'
+.admin-card{border:1.5px solid #b8d0ee;border-radius:10px;padding:14px 16px;margin-bottom:12px;background:#fff}
+.admin-card h4{color:#1a4f8a;font-size:.95rem;margin-bottom:4px}
+.admin-card .meta{font-size:.8rem;color:#4a5a6e;margin-bottom:8px}
+.admin-card .status-ok{color:#166534;font-weight:700}
+.admin-card .status-pen{color:#92400e;font-weight:700}
+</style></head>'+
     '<body onload="window.print()">'+
     '<div class="hdr"><img src="'+LU+'"/>'+
     '<div class="hc">GOVERNO DO ESTADO DE MATO GROSSO<br>UNIVERSIDADE DO ESTADO DE MATO GROSSO - UNEMAT<br>PRO-REITORIA DE PESQUISA E POS-GRADUACAO<br>ProfAgua - Gestao e Regulacao de Recursos Hidricos</div>'+
@@ -1134,6 +1163,167 @@ salvarD = async function(tipo) {
     tk('Erro ao salvar: ' + e.message, 'err');
   }
 };
+
+// ============================================================
+// ADMINS
+// ============================================================
+var ADMINS = [
+  'xnob5hHsrDdxdxKi3R2VPNwQtv23',
+  'y39GeOJgVQeyHQYsxrJcpbpvpo32'
+];
+
+function isAdmin() {
+  return USER && ADMINS.indexOf(USER.key) !== -1;
+}
+
+function mostrarAdmin() {
+  var btn = document.getElementById('btn_admin');
+  if (btn) btn.style.display = isAdmin() ? 'block' : 'none';
+}
+
+async function carregarAdmin() {
+  var lista = document.getElementById('admin_lista');
+  lista.innerHTML = '<div class="vz">Carregando todas as solicitações...</div>';
+  
+  try {
+    // Buscar todos os usuários
+    var snap = await DB.ref('usuarios').once('value');
+    var todos = snap.val() || {};
+    var todasDiarias = [];
+    
+    Object.keys(todos).forEach(function(uid) {
+      var usuario = todos[uid];
+      var info = usuario.info || {};
+      var diarias = usuario.diarias || {};
+      Object.keys(diarias).forEach(function(did) {
+        var d = diarias[did];
+        d._uid = uid;
+        d._usuario_nome = info.nome || info.cpf || uid;
+        d._usuario_email = info.email || '';
+        d._tem_pdf = !!(usuario.pdfs_assinados && usuario.pdfs_assinados[did]);
+        todasDiarias.push(d);
+      });
+    });
+    
+    // Ordenar por data mais recente
+    todasDiarias.sort(function(a,b){ return (b.ts||'').localeCompare(a.ts||''); });
+    
+    if (!todasDiarias.length) {
+      lista.innerHTML = '<div class="vz">Nenhuma solicitação encontrada.</div>';
+      return;
+    }
+    
+    lista.innerHTML = todasDiarias.map(function(d) {
+      var status = d.enviado_profagua
+        ? '<span class="status-ok">✅ Enviado ao ProfÁgua em ' + (d.data_envio||'').slice(0,10) + '</span>'
+        : '<span class="status-pen">⏳ Aguardando envio</span>';
+      var pdfStatus = d._tem_pdf
+        ? '<span style="color:#166534">📄 PDF assinado disponível</span>'
+        : '<span style="color:#92400e">📋 Sem PDF assinado</span>';
+      return '<div class="admin-card">' +
+        '<h4>' + (d.nome||d._usuario_nome) + ' — ' + (d.mes||'') + '</h4>' +
+        '<div class="meta">' +
+          '💰 ' + (d.total||'') + ' &nbsp;|&nbsp; ' +
+          '🗺️ ' + (d._dest||'') + ' &nbsp;|&nbsp; ' +
+          '📅 Salvo: ' + (d.ts||'').slice(0,10) +
+        '</div>' +
+        '<div style="margin-bottom:6px">' + status + ' &nbsp;|&nbsp; ' + pdfStatus + '</div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+          (d._tem_pdf ? '<button class="btn bp" style="padding:5px 12px;font-size:.8rem" onclick="adminBaixarPDF('' + d._uid + '','' + d.id + '')">⬇ Baixar PDF</button>' : '') +
+          '<button class="btn bs" style="padding:5px 12px;font-size:.8rem" onclick="adminVerDiaria('' + d._uid + '','' + d.id + '')">👁 Ver detalhes</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+    
+  } catch(e) {
+    lista.innerHTML = '<div class="vz" style="color:#991b1b">Erro: ' + e.message + '</div>';
+  }
+}
+
+async function adminBaixarPDF(uid, did) {
+  ldgOn('Carregando PDF...');
+  try {
+    var snap = await DB.ref('usuarios/' + uid + '/pdfs_assinados/' + did).once('value');
+    var dados = snap.val();
+    if (!dados || !dados.pdf) { ldgOff(); tk('PDF não encontrado.', 'err'); return; }
+    var a = document.createElement('a');
+    a.href = dados.pdf;
+    a.download = dados.nome || 'diaria_assinada.pdf';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    ldgOff(); tk('PDF baixado!', 'ok');
+  } catch(e) { ldgOff(); tk('Erro: ' + e.message, 'err'); }
+}
+
+async function adminVerDiaria(uid, did) {
+  ldgOn('Carregando...');
+  try {
+    var snap = await DB.ref('usuarios/' + uid + '/diarias/' + did).once('value');
+    var d = snap.val();
+    ldgOff();
+    if (!d) { tk('Diária não encontrada.', 'err'); return; }
+    alert('Solicitante: ' + d.nome + 
+      '\nCPF: ' + d.cpf +
+      '\nMatrícula: ' + d.matr +
+      '\nDestino: ' + (d._dest||'') +
+      '\nTotal: ' + d.total +
+      '\nJustificativa: ' + d.just +
+      '\nProcesso: ' + (d.proc||''));
+  } catch(e) { ldgOff(); tk('Erro: ' + e.message, 'err'); }
+}
+
+// ============================================================
+// E-MAIL COM LINK (EmailJS só texto)
+// ============================================================
+async function enviarParaProfagua() {
+  if (!diáriaAtualId) { tk('Salve a diária primeiro.', 'err'); return; }
+
+  var lista = await fbLer('diarias');
+  var d = lista.filter(function(x){ return x.id === diáriaAtualId; })[0];
+  if (!d) { tk('Diária não encontrada. Salve novamente.', 'err'); return; }
+
+  // Verificar se tem PDF assinado
+  var snapPDF = await DB.ref('usuarios/' + USER.key + '/pdfs_assinados/' + diáriaAtualId).once('value');
+  if (!snapPDF.val()) {
+    tk('Faça o upload do PDF assinado primeiro.', 'err');
+    return;
+  }
+
+  var dias = calcularDiasAntecedencia() || 0;
+  var linkSistema = 'https://ernandes-sobreira.github.io/diarias-profagua/';
+
+  ldgOn('Enviando e-mail para ProfÁgua...');
+
+  var params = {
+    nome_beneficiado: d.nome || USER.nome,
+    mes_referencia: d.mes || '',
+    valor_total: d.total || '',
+    destino: d._dest || '',
+    justificativa: (d.just || '').slice(0, 300),
+    numero_processo: d.proc || '',
+    dias_antecedencia: String(dias),
+    data_saida: d._dini ? fd(d._dini) : '',
+    email_beneficiado: USER.email || '',
+    link_sistema: linkSistema,
+    name: d.nome || USER.nome,
+    email: USER.email || ''
+  };
+
+  try {
+    await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, params);
+    ldgOff();
+    DB.ref('usuarios/' + USER.key + '/diarias/' + diáriaAtualId).update({
+      enviado_profagua: true,
+      data_envio: new Date().toISOString()
+    });
+    document.getElementById('btn_enviar_profagua').textContent = '✅ Enviado para ProfÁgua!';
+    document.getElementById('btn_enviar_profagua').style.background = '#166534';
+    document.getElementById('btn_enviar_profagua').disabled = true;
+    tk('E-mail enviado com sucesso para profagua@unemat.br!', 'ok');
+  } catch(e) {
+    ldgOff();
+    tk('Erro ao enviar e-mail: ' + (e.text || e.message || JSON.stringify(e)), 'err');
+  }
+}
 </script>
 </body>
 </html>
