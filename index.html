@@ -248,7 +248,7 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
   <div class="bts">
     <button class="btn" style="background:#0f766e;color:#fff" onclick="salvarD('apenas')">&#128190; Salvar</button>
     <button class="btn bp" onclick="salvarD('docx')">Baixar Word (.docx)</button>
-    <button class="btn bg" onclick="salvarD('pdf')">Baixar PDF (.docx)</button>
+    <button class="btn bg" 
     <button class="btn" style="background:#6366f1;color:#fff" onclick="abrirGovBr()" id="btn_govbr" title="Abre o assinador digital do governo">&#9998; Assinar pelo gov.br</button>
     <button class="btn bs" onclick="limD()">Limpar</button>
   </div>
@@ -822,13 +822,17 @@ async function renderListas(){
   document.getElementById('lstR').innerHTML='<div class="vz">Carregando...</div>';
   try{
     var ld=await fbLer('diarias');
+    // Marcar quais diárias têm PDF assinado
+    var snapPDFs = await DB.ref('usuarios/'+USER.key+'/pdfs_assinados').once('value');
+    var pdfsObj = snapPDFs.val() || {};
+    ld.forEach(function(d){ d._tem_pdf = !!pdfsObj[d.id]; });
     document.getElementById('lstD').innerHTML=ld.length?ld.map(function(d){
-      return '<div class="di"><div><h4>'+d.nome+' <span class="tag tagD">Diaria</span></h4>'+
+      var temPDF = d.enviado_profagua ? ' <span style="color:#166534;font-size:.75rem">✔ Enviado</span>' : (d._tem_pdf ? ' <span style="color:#166534;font-size:.75rem">📄 PDF assinado</span>' : '');
+      return '<div class="di"><div><h4>'+d.nome+' <span class="tag tagD">Diária</span>'+temPDF+'</h4>'+
         '<p>'+(d.just||'').slice(0,65)+'</p>'+
         '<p style="margin-top:3px">'+d.total+' | '+(d.ts||'').slice(0,10)+'</p></div>'+
         '<div class="dacts">'+
         '<button class="btn bp" style="padding:6px 12px;font-size:.79rem" onclick="editarD(\''+d.id+'\')">Editar</button>'+
-        '<button class="btn bg" style="padding:6px 12px;font-size:.79rem" onclick="pdfD(\''+d.id+'\')">PDF/Word</button>'+
         '<button class="btn bp" style="padding:6px 12px;font-size:.79rem;background:#2169c4" onclick="wdD(\''+d.id+'\')">Word</button>'+
         '<button class="brem" onclick="del(\''+d.id+'\',\'diarias\')">X</button></div></div>';
     }).join(''):'<div class="vz">Nenhuma diaria salva.</div>';
@@ -852,6 +856,10 @@ async function renderListas(){
 async function renderStats(){
   try{
     var ld=await fbLer('diarias');
+    // Marcar quais diárias têm PDF assinado
+    var snapPDFs = await DB.ref('usuarios/'+USER.key+'/pdfs_assinados').once('value');
+    var pdfsObj = snapPDFs.val() || {};
+    ld.forEach(function(d){ d._tem_pdf = !!pdfsObj[d.id]; });
     var lr=await fbLer('relatorios');
     var tot=ld.reduce(function(a,x){return a+(x._totalNum||0);},0);
     document.getElementById('stats').innerHTML=
