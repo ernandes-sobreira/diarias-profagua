@@ -1092,20 +1092,20 @@ async function renderListas(){
         ? '<span style="display:inline-flex;align-items:center;gap:4px;background:#dcfce7;color:#166534;border-radius:6px;padding:2px 8px;font-size:.75rem;font-weight:700">Enviado ao ProfAgua</span>'
         : '<span style="display:inline-flex;align-items:center;gap:4px;background:#fef3c7;color:#92400e;border-radius:6px;padding:2px 8px;font-size:.75rem;font-weight:700">Nao enviado</span>';
       var btnBaixarPDF = d._tem_pdf
-        ? '<button class="btn" style="padding:6px 12px;font-size:.79rem;background:#166534;color:#fff" onclick="baixarPDFAssinado(''+d.id+'')">PDF assinado</button>'
+        ? '<button class="btn" style="padding:6px 12px;font-size:.79rem;background:#166534;color:#fff" onclick="baixarPDFAssinado(this.dataset.id)" data-id="'+d.id+'">&darr; PDF</button>'
         : '';
       var btnEnviar = (!d.enviado_profagua && d._tem_pdf)
-        ? '<button class="btn" style="padding:6px 12px;font-size:.79rem;background:#dc2626;color:#fff" onclick="enviarDiretoDaLista(''+d.id+'')">Enviar ao ProfAgua</button>'
+        ? '<button class="btn" style="padding:6px 12px;font-size:.79rem;background:#dc2626;color:#fff" onclick="enviarDiretoDaLista(this.dataset.id)" data-id="'+d.id+'">&check; Enviar ProfAgua</button>'
         : '';
       return '<div class="di"><div><h4>'+d.nome+' <span class="tag tagD">Diaria</span></h4>'+
         '<p>'+(d.just||'').slice(0,65)+'</p>'+
         '<p style="margin-top:3px">'+d.total+' | '+(d.ts||'').slice(0,10)+'</p>'+
         '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px">'+stPDF+' '+stEnvio+'</div></div>'+
         '<div class="dacts">'+
-        '<button class="btn bp" style="padding:6px 12px;font-size:.79rem" onclick="editarD(''+d.id+'')">Editar</button>'+
-        '<button class="btn bp" style="padding:6px 12px;font-size:.79rem;background:#2169c4" onclick="wdD(''+d.id+'')">Word</button>'+
+        '<button class="btn bp" style="padding:6px 12px;font-size:.79rem" onclick="editarD(\''+d.id+'\')">&gt; Editar</button>'+
+        '<button class="btn bp" style="padding:6px 12px;font-size:.79rem;background:#2169c4" onclick="wdD(\''+d.id+'\')">&gt; Word</button>'+
         btnBaixarPDF+btnEnviar+
-        '<button class="brem" onclick="del(''+d.id+'','diarias')">X</button></div></div>';
+        '<button class="brem" onclick="del(this.dataset.id,\'diarias\')" data-id="'+d.id+'">X</button></div></div>';
     }).join(''):'<div class="vz">Nenhuma diaria salva.</div>';
 
     var lr=await fbLer('relatorios');
@@ -1114,9 +1114,9 @@ async function renderListas(){
         '<p>'+r.ini+' a '+r.fim+' | '+r.qtd+' diarias | '+r.val+'</p>'+
         '<p style="margin-top:3px">Salvo: '+(r.ts||'').slice(0,10)+'</p></div>'+
         '<div class="dacts">'+
-        '<button class="btn bp" style="padding:6px 12px;font-size:.79rem" onclick="editarR(''+r.id+'')">Editar</button>'+
-        '<button class="btn bp" style="padding:6px 12px;font-size:.79rem;background:#2169c4" onclick="wdR(''+r.id+'')">Word</button>'+
-        '<button class="brem" onclick="del(''+r.id+'','relatorios')">X</button></div></div>';
+        '<button class="btn bp" style="padding:6px 12px;font-size:.79rem" onclick="editarR(\''+r.id+'\')">&gt; Editar</button>'+
+        '<button class="btn bp" style="padding:6px 12px;font-size:.79rem;background:#2169c4" onclick="wdR(\''+r.id+'\')">&gt; Word</button>'+
+        '<button class="brem" onclick="del(this.dataset.id,\'relatorios\')" data-id="'+r.id+'">X</button></div></div>';
     }).join(''):'<div class="vz">Nenhum relatorio salvo.</div>';
   }catch(e){
     document.getElementById('lstD').innerHTML='<div class="vz">Erro ao carregar: '+e.message+'</div>';
