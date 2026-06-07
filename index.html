@@ -248,7 +248,7 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
   <div class="bts">
     <button class="btn" style="background:#0f766e;color:#fff" onclick="salvarD('apenas')">&#128190; Salvar</button>
     <button class="btn bp" onclick="salvarD('docx')">Baixar Word (.docx)</button>
-    <button class="btn bg" onclick="salvarD('pdf')">Baixar PDF (imprimir)</button>
+    <button class="btn bg" onclick="salvarD('pdf')">Baixar PDF (.docx)</button>
     <button class="btn" style="background:#6366f1;color:#fff" onclick="abrirGovBr()" id="btn_govbr" title="Abre o assinador digital do governo">&#9998; Assinar pelo gov.br</button>
     <button class="btn bs" onclick="limD()">Limpar</button>
   </div>
@@ -720,32 +720,10 @@ async function gerarDocxR(d){
 // GERAR PDF (HTML para impressao)
 // ============================================================
 function gerarPDFD(d){
-  var rows=function(ls){return ls.map(function(r){return '<tr><td>'+r.orig+'</td><td>'+r.saida+'</td><td>'+r.hsaida+'</td><td>'+r.dest+'</td><td>'+r.ret+'</td><td>'+r.hret+'</td><td>'+r.qtd+'</td><td><b>'+r.tot+'</b></td></tr>';}).join('');};
-  var st='body{font-family:Arial,sans-serif;font-size:9pt;margin:8mm 10mm;color:#111;line-height:1.4}.hdr{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #1a4f8a;padding-bottom:6px;margin-bottom:8px}.hdr img{height:36px;object-fit:contain}.hc{text-align:center;font-size:7.5pt;font-weight:bold;color:#0f3060;line-height:1.35}h2{text-align:center;font-size:11.5pt;color:#0f3060;margin:5px 0 2px}.proc{text-align:center;color:#cc0000;margin-bottom:7px}table{width:100%;border-collapse:collapse;margin-bottom:6px;font-size:8pt}td,th{border:1px solid #888;padding:3px 5px}th{background:#1a4f8a;color:#fff;font-size:7.5pt;text-align:left}.tot{display:flex;justify-content:space-between;font-weight:bold;background:#e8f0fa;border:1px solid #93c5fd;padding:4px 8px;margin:5px 0;font-size:9pt}.jb{border:1px solid #888;min-height:40px;padding:5px;font-size:8.5pt;margin-bottom:6px}.as{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;font-size:8pt;text-align:center}.al2{border-top:1.5px solid #333;padding-top:3px;margin-top:20px}.at{text-align:center;font-size:7.5pt;font-weight:bold;color:#cc0000;margin-top:7px}@media print{body{margin:5mm}}';
-  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>'+st+'</style></head>'+
-    '<body onload="window.print()">'+
-    '<div class="hdr"><img src="'+LU+'"/>'+
-    '<div class="hc">GOVERNO DO ESTADO DE MATO GROSSO<br>UNIVERSIDADE DO ESTADO DE MATO GROSSO - UNEMAT<br>PRO-REITORIA DE PESQUISA E POS-GRADUACAO<br>ProfAgua - Gestao e Regulacao de Recursos Hidricos</div>'+
-    '<img src="'+LF+'"/></div>'+
-    '<h2>SOLICITACAO DE PAGAMENTO DE DIARIA(S)</h2><div class="proc">Processo Nr '+d.proc+'</div>'+
-    '<table><tr><td colspan="4"><b>NOME:</b> '+d.nome+'</td></tr>'+
-    '<tr><td colspan="2"><b>UNIDADE:</b> '+d.unid+'</td><td colspan="2"><b>DEPARTAMENTO:</b> '+d.dept+'</td></tr>'+
-    '<tr><td><b>MATRICULA:</b> '+d.matr+'</td><td><b>RG:</b> '+d.rg+'</td><td colspan="2"><b>CPF:</b> '+d.cpf+'</td></tr>'+
-    '<tr><td><b>BANCO:</b> '+d.banco+'</td><td><b>AGENCIA:</b> '+d.agenc+'</td><td colspan="2"><b>CONTA:</b> '+d.conta+'</td></tr>'+
-    '<tr><td colspan="2"><b>ENDERECO:</b> '+d.end+' - '+d.bair+' - '+d.cida+'/'+d.uf+' - CEP '+d.cep+'</td><td><b>TEL:</b> '+d.tel+'</td><td><b>DATA:</b> '+d.data+'</td></tr>'+
-    '<tr><td colspan="2"><b>E-MAIL:</b> '+d.email+'</td><td><b>MES REF.:</b> '+d.mes+'</td><td><b>CARGO:</b> '+d.cargo+'</td></tr></table>'+
-    '<p style="margin:5px 0 2px"><b>A) DIARIAS COM PERNOITE - VALOR: '+d.vp+'</b></p>'+
-    '<table><thead><tr><th>Origem</th><th>Saida - Dia</th><th>Hora</th><th>Destino</th><th>Retorno - Dia</th><th>Hora</th><th>Nr Diarias</th><th>Total</th></tr></thead><tbody>'+rows((d.lP||[]).length?(d.lP||[]):[{orig:'',saida:'',hsaida:'',dest:'',ret:'',hret:'',qtd:'',tot:''}])+'</tbody></table>'+
-    '<p style="margin:5px 0 2px"><b>B) MEIA DIARIA - VALOR: '+d.vm+'</b></p>'+
-    '<table><thead><tr><th>Origem</th><th>Saida - Dia</th><th>Hora</th><th>Destino</th><th>Chegada - Dia</th><th>Hora</th><th>Nr Meias</th><th>Total</th></tr></thead><tbody>'+rows((d.lM||[]).length?(d.lM||[]):[{orig:'',saida:'',hsaida:'',dest:'',ret:'',hret:'',qtd:'',tot:''}])+'</tbody></table>'+
-    '<div class="tot"><span>TOTAL A RECEBER (A + B)</span><span>'+d.total+'</span></div>'+
-    '<p style="margin:4px 0 2px"><b>JUSTIFICATIVA:</b></p><div class="jb">'+d.just+'</div>'+
-    '<p><b>DE ACORDO:</b></p>'+
-    '<div class="as"><div><div class="al2">NOME E ASSINATURA DO COORDENADOR/VICE-COORDENADOR<br>Data: ___/___/______</div></div><div><div class="al2">NOME E ASSINATURA DO BENEFICIADO<br>Data: ___/___/______</div></div></div>'+
-    '<p class="at">ATENCAO: SAO PROIBIDAS RASURAS NA PRESENTE SOLICITACAO</p>'+
-    '</body></html>';
-  dlBlob(new Blob([html],{type:'text/html;charset=utf-8'}),'PDF_Diaria_'+(d.nome||'').replace(/\s+/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.html');
-  tk('Arquivo HTML baixado! Abra no Chrome: Ctrl+P > Salvar como PDF','inf');
+  // Gera o mesmo DOCX do Word e abre para impressão como PDF
+  gerarDocxD(d).then(function(){
+    tk('Para salvar como PDF: abra o Word baixado e use Arquivo > Salvar como > PDF','inf');
+  }).catch(function(e){ tk('Erro: '+e.message,'err'); });
 }
 
 function gerarPDFR(d){
@@ -850,7 +828,7 @@ async function renderListas(){
         '<p style="margin-top:3px">'+d.total+' | '+(d.ts||'').slice(0,10)+'</p></div>'+
         '<div class="dacts">'+
         '<button class="btn bp" style="padding:6px 12px;font-size:.79rem" onclick="editarD(\''+d.id+'\')">Editar</button>'+
-        '<button class="btn bg" style="padding:6px 12px;font-size:.79rem" onclick="pdfD(\''+d.id+'\')">PDF</button>'+
+        '<button class="btn bg" style="padding:6px 12px;font-size:.79rem" onclick="pdfD(\''+d.id+'\')">PDF/Word</button>'+
         '<button class="btn bp" style="padding:6px 12px;font-size:.79rem;background:#2169c4" onclick="wdD(\''+d.id+'\')">Word</button>'+
         '<button class="brem" onclick="del(\''+d.id+'\',\'diarias\')">X</button></div></div>';
     }).join(''):'<div class="vz">Nenhuma diaria salva.</div>';
@@ -862,7 +840,7 @@ async function renderListas(){
         '<p style="margin-top:3px">Salvo: '+(r.ts||'').slice(0,10)+'</p></div>'+
         '<div class="dacts">'+
         '<button class="btn bp" style="padding:6px 12px;font-size:.79rem" onclick="editarR(\''+r.id+'\')">Editar</button>'+
-        '<button class="btn bg" style="padding:6px 12px;font-size:.79rem" onclick="pdfR(\''+r.id+'\')">PDF</button>'+
+        '<button class="btn bg" style="padding:6px 12px;font-size:.79rem" onclick="pdfR(\''+r.id+'\')">PDF/Word</button>'+
         '<button class="btn bp" style="padding:6px 12px;font-size:.79rem;background:#2169c4" onclick="wdR(\''+r.id+'\')">Word</button>'+
         '<button class="brem" onclick="del(\''+r.id+'\',\'relatorios\')">X</button></div></div>';
     }).join(''):'<div class="vz">Nenhum relatório salvo.</div>';
