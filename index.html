@@ -734,9 +734,9 @@ function gerarPDFD(d){
     '<tr><td colspan="2"><b>ENDERECO:</b> '+d.end+' - '+d.bair+' - '+d.cida+'/'+d.uf+' - CEP '+d.cep+'</td><td><b>TEL:</b> '+d.tel+'</td><td><b>DATA:</b> '+d.data+'</td></tr>'+
     '<tr><td colspan="2"><b>E-MAIL:</b> '+d.email+'</td><td><b>MES REF.:</b> '+d.mes+'</td><td><b>CARGO:</b> '+d.cargo+'</td></tr></table>'+
     '<p style="margin:5px 0 2px"><b>A) DIARIAS COM PERNOITE - VALOR: '+d.vp+'</b></p>'+
-    '<table><thead><tr><th>Origem</th><th>Saida - Dia</th><th>Hora</th><th>Destino</th><th>Retorno - Dia</th><th>Hora</th><th>Nr Diarias</th><th>Total</th></tr></thead><tbody>'+rows(d.lP.length?d.lP:[{orig:'',saida:'',hsaida:'',dest:'',ret:'',hret:'',qtd:'',tot:''}])+'</tbody></table>'+
+    '<table><thead><tr><th>Origem</th><th>Saida - Dia</th><th>Hora</th><th>Destino</th><th>Retorno - Dia</th><th>Hora</th><th>Nr Diarias</th><th>Total</th></tr></thead><tbody>'+rows((d.lP||[]).length?(d.lP||[]):[{orig:'',saida:'',hsaida:'',dest:'',ret:'',hret:'',qtd:'',tot:''}])+'</tbody></table>'+
     '<p style="margin:5px 0 2px"><b>B) MEIA DIARIA - VALOR: '+d.vm+'</b></p>'+
-    '<table><thead><tr><th>Origem</th><th>Saida - Dia</th><th>Hora</th><th>Destino</th><th>Chegada - Dia</th><th>Hora</th><th>Nr Meias</th><th>Total</th></tr></thead><tbody>'+rows(d.lM.length?d.lM:[{orig:'',saida:'',hsaida:'',dest:'',ret:'',hret:'',qtd:'',tot:''}])+'</tbody></table>'+
+    '<table><thead><tr><th>Origem</th><th>Saida - Dia</th><th>Hora</th><th>Destino</th><th>Chegada - Dia</th><th>Hora</th><th>Nr Meias</th><th>Total</th></tr></thead><tbody>'+rows((d.lM||[]).length?(d.lM||[]):[{orig:'',saida:'',hsaida:'',dest:'',ret:'',hret:'',qtd:'',tot:''}])+'</tbody></table>'+
     '<div class="tot"><span>TOTAL A RECEBER (A + B)</span><span>'+d.total+'</span></div>'+
     '<p style="margin:4px 0 2px"><b>JUSTIFICATIVA:</b></p><div class="jb">'+d.just+'</div>'+
     '<p><b>DE ACORDO:</b></p>'+
