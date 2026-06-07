@@ -1171,14 +1171,11 @@ function mostrarAdmin() {
 
 async function carregarAdmin() {
   var lista = document.getElementById('admin_lista');
-  lista.innerHTML = '<div class="vz">Carregando todas as solicitações...</div>';
-  
+  lista.innerHTML = '<div class="vz">Carregando todas as solicitacoes...</div>';
   try {
-    // Buscar todos os usuários
     var snap = await DB.ref('usuarios').once('value');
     var todos = snap.val() || {};
     var todasDiarias = [];
-    
     Object.keys(todos).forEach(function(uid) {
       var usuario = todos[uid];
       var info = usuario.info || {};
@@ -1186,43 +1183,48 @@ async function carregarAdmin() {
       Object.keys(diarias).forEach(function(did) {
         var d = diarias[did];
         d._uid = uid;
-        d._usuario_nome = info.nome || info.cpf || uid;
-        d._usuario_email = info.email || '';
+        d._usuario_nome = info.nome || uid;
         d._tem_pdf = !!(usuario.pdfs_assinados && usuario.pdfs_assinados[did]);
         todasDiarias.push(d);
       });
     });
-    
-    // Ordenar por data mais recente
     todasDiarias.sort(function(a,b){ return (b.ts||'').localeCompare(a.ts||''); });
-    
     if (!todasDiarias.length) {
-      lista.innerHTML = '<div class="vz">Nenhuma solicitação encontrada.</div>';
+      lista.innerHTML = '<div class="vz">Nenhuma solicitacao encontrada.</div>';
       return;
     }
-    
-    lista.innerHTML = todasDiarias.map(function(d) {
-      var status = d.enviado_profagua
-        ? '<span class="status-ok">✅ Enviado ao ProfÁgua em ' + (d.data_envio||'').slice(0,10) + '</span>'
-        : '<span class="status-pen">⏳ Aguardando envio</span>';
-      var pdfStatus = d._tem_pdf
-        ? '<span style="color:#166534">📄 PDF assinado disponível</span>'
-        : '<span style="color:#92400e">📋 Sem PDF assinado</span>';
-      return '<div class="admin-card">' +
-        '<h4>' + (d.nome||d._usuario_nome) + ' — ' + (d.mes||'') + '</h4>' +
-        '<div class="meta">' +
-          '💰 ' + (d.total||'') + ' &nbsp;|&nbsp; ' +
-          '🗺️ ' + (d._dest||'') + ' &nbsp;|&nbsp; ' +
-          '📅 Salvo: ' + (d.ts||'').slice(0,10) +
-        '</div>' +
-        '<div style="margin-bottom:6px">' + status + ' &nbsp;|&nbsp; ' + pdfStatus + '</div>' +
-        '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
-          (d._tem_pdf ? '<button class="btn bp" style="padding:5px 12px;font-size:.8rem" onclick="adminBaixarPDF('' + d._uid + '','' + d.id + '')">⬇ Baixar PDF</button>' : '') +
-          '<button class="btn bs" style="padding:5px 12px;font-size:.8rem" onclick="adminVerDiaria('' + d._uid + '','' + d.id + '')">👁 Ver detalhes</button>' +
-        '</div>' +
-      '</div>';
-    }).join('');
-    
+    lista.innerHTML = '';
+    todasDiarias.forEach(function(d) {
+      var div = document.createElement('div');
+      div.className = 'admin-card';
+      var statusTxt = d.enviado_profagua
+        ? '<span class="status-ok">Enviado ao ProfAgua em ' + (d.data_envio||'').slice(0,10) + '</span>'
+        : '<span class="status-pen">Aguardando envio</span>';
+      var pdfTxt = d._tem_pdf
+        ? '<span style="color:#166534">PDF assinado disponivel</span>'
+        : '<span style="color:#92400e">Sem PDF assinado</span>';
+      div.innerHTML = '<h4>' + (d.nome||d._usuario_nome||'') + ' - ' + (d.mes||'') + '</h4>' +
+        '<div class="meta">Valor: ' + (d.total||'') + ' | Destino: ' + (d._dest||'') + ' | Salvo: ' + (d.ts||'').slice(0,10) + '</div>' +
+        '<div style="margin-bottom:6px">' + statusTxt + ' | ' + pdfTxt + '</div>';
+      var btns = document.createElement('div');
+      btns.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap';
+      if (d._tem_pdf) {
+        var b1 = document.createElement('button');
+        b1.className = 'btn bp';
+        b1.style.cssText = 'padding:5px 12px;font-size:.8rem';
+        b1.textContent = 'Baixar PDF';
+        b1.onclick = (function(uid,did){ return function(){ adminBaixarPDF(uid,did); }; })(d._uid, d.id);
+        btns.appendChild(b1);
+      }
+      var b2 = document.createElement('button');
+      b2.className = 'btn bs';
+      b2.style.cssText = 'padding:5px 12px;font-size:.8rem';
+      b2.textContent = 'Ver detalhes';
+      b2.onclick = (function(uid,did){ return function(){ adminVerDiaria(uid,did); }; })(d._uid, d.id);
+      btns.appendChild(b2);
+      div.appendChild(btns);
+      lista.appendChild(div);
+    });
   } catch(e) {
     lista.innerHTML = '<div class="vz" style="color:#991b1b">Erro: ' + e.message + '</div>';
   }
