@@ -990,6 +990,219 @@ document.addEventListener('click', function(e) {
     panel.classList.remove('open');
   }
 });
+// ============================================================
+// SALVAR / EDITAR documentos no Firebase
+// ============================================================
+async function salvarD(tipo){
+  var d=coletarD();
+  if(!validD(d)){ show('d_al','err'); return; }
+  hide('d_al');
+  ldgOn('Salvando no Firebase...');
+  salvarPerfil();
+  try{
+    var id=editD||uid();
+    diariaAtualId=id;
+    await fbSalvar('diarias',id,Object.assign({},d,{id:id,ts:new Date().toISOString()}));
+    editD=id;
+    ldgOff(); tk('Diaria salva na nuvem!','ok'); renderStats();
+    // Verificar se ja tem PDF assinado
+    DB.ref('usuarios/'+USER.key+'/pdfs_assinados/'+id).once('value').then(function(snap){
+      if(snap.val()){
+        pdfAssinadoB64=snap.val().pdf;
+        document.getElementById('pdf_salvo_info').style.display='block';
+        document.getElementById('btn_enviar_profagua').style.display='flex';
+        document.getElementById('btn_excluir_pdf').style.display='block';
+        if(snap.val().enviado_profagua){
+          document.getElementById('btn_enviar_profagua').textContent='Ja enviado ao ProfAgua';
+          document.getElementById('btn_enviar_profagua').style.background='#166534';
+          document.getElementById('btn_enviar_profagua').disabled=true;
+        }
+      }
+    });
+    if(tipo==='pdf') gerarPDFD(d);
+    else if(tipo==='docx') await gerarDocxD(d);
+  }catch(e){ ldgOff(); tk('Erro ao salvar: '+e.message,'err'); }
+}
+
+async function salvarR(tipo){
+  var d=coletarR();
+  if(!validR(d)){ show('r_al','err'); return; }
+  hide('r_al');
+  ldgOn('Salvando no Firebase...');
+  try{
+    var id=editR||uid();
+    await fbSalvar('relatorios',id,Object.assign({},d,{id:id,ts:new Date().toISOString()}));
+    editR=null;
+    ldgOff(); tk('Relatorio salvo na nuvem!','ok'); renderStats();
+    if(tipo==='pdf') gerarPDFR(d);
+    else if(tipo==='docx') await gerarDocxR(d);
+  }catch(e){ ldgOff(); tk('Erro ao salvar: '+e.message,'err'); }
+}
+
+// ============================================================
+// LISTAR e EDITAR documentos
+// ============================================================
+function preencheSel(){
+  var sel=document.getElementById('r_sel');
+  fbLer('diarias').then(function(lista){
+    sel.innerHTML='<option value="">-- Selecione ou preencha manualmente --</option>';
+    lista.forEach(function(d){
+      var op=document.createElement('option'); op.value=d.id;
+      op.textContent=d.nome+' | '+(d.just||'').slice(0,50)+' | '+(d.ts||'').slice(0,10);
+      sel.appendChild(op);
+    });
+  });
+}
+
+function vincular(){
+  var id=document.getElementById('r_sel').value; if(!id) return;
+  fbLer('diarias').then(function(lista){
+    var d=lista.filter(function(x){return x.id===id;})[0]; if(!d) return;
+    document.getElementById('r_de').value=d._orig||'Caceres - MT';
+    document.getElementById('r_para').value=d._dest||'';
+    if(d._dini) document.getElementById('r_ini').value=d._dini;
+    if(d._dfim) document.getElementById('r_fim').value=d._dfim;
+    document.getElementById('r_qtd').value=d._qtd||'';
+    document.getElementById('r_val').value=(d._totalNum||0).toFixed(2);
+    document.getElementById('r_benef').value=d.nome||'';
+    document.getElementById('r_cpf').value=d.cpf||'';
+    document.getElementById('r_obj').value=d.just||'';
+    var hoje=new Date();
+    var ms=['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+    document.getElementById('r_loc').value='Caceres, '+hoje.getDate()+' de '+ms[hoje.getMonth()]+' de '+hoje.getFullYear();
+    tk('Dados da diaria carregados!','ok');
+  });
+}
+
+async function renderListas(){
+  document.getElementById('lstD').innerHTML='<div class="vz">Carregando...</div>';
+  document.getElementById('lstR').innerHTML='<div class="vz">Carregando...</div>';
+  try{
+    var ld=await fbLer('diarias');
+    // Marcar quais diarias tem PDF assinado
+    var snapPDFs = await DB.ref('usuarios/'+USER.key+'/pdfs_assinados').once('value');
+    var pdfsObj = snapPDFs.val() || {};
+    ld.forEach(function(d){ d._tem_pdf = !!pdfsObj[d.id]; });
+
+    document.getElementById('lstD').innerHTML=ld.length?ld.map(function(d){
+      var stPDF = d._tem_pdf
+        ? '<span style="display:inline-flex;align-items:center;gap:4px;background:#dcfce7;color:#166534;border-radius:6px;padding:2px 8px;font-size:.75rem;font-weight:700">PDF assinado</span>'
+        : '<span style="display:inline-flex;align-items:center;gap:4px;background:#fee2e2;color:#991b1b;border-radius:6px;padding:2px 8px;font-size:.75rem;font-weight:700">Sem PDF</span>';
+      var stEnvio = d.enviado_profagua
+        ? '<span style="display:inline-flex;align-items:center;gap:4px;background:#dcfce7;color:#166534;border-radius:6px;padding:2px 8px;font-size:.75rem;font-weight:700">Enviado ao ProfAgua</span>'
+        : '<span style="display:inline-flex;align-items:center;gap:4px;background:#fef3c7;color:#92400e;border-radius:6px;padding:2px 8px;font-size:.75rem;font-weight:700">Nao enviado</span>';
+      var btnBaixarPDF = d._tem_pdf
+        ? '<button class="btn" style="padding:6px 12px;font-size:.79rem;background:#166534;color:#fff" onclick="baixarPDFAssinado(''+d.id+'')">PDF assinado</button>'
+        : '';
+      var btnEnviar = (!d.enviado_profagua && d._tem_pdf)
+        ? '<button class="btn" style="padding:6px 12px;font-size:.79rem;background:#dc2626;color:#fff" onclick="enviarDiretoDaLista(''+d.id+'')">Enviar ao ProfAgua</button>'
+        : '';
+      return '<div class="di"><div><h4>'+d.nome+' <span class="tag tagD">Diaria</span></h4>'+
+        '<p>'+(d.just||'').slice(0,65)+'</p>'+
+        '<p style="margin-top:3px">'+d.total+' | '+(d.ts||'').slice(0,10)+'</p>'+
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px">'+stPDF+' '+stEnvio+'</div></div>'+
+        '<div class="dacts">'+
+        '<button class="btn bp" style="padding:6px 12px;font-size:.79rem" onclick="editarD(''+d.id+'')">Editar</button>'+
+        '<button class="btn bp" style="padding:6px 12px;font-size:.79rem;background:#2169c4" onclick="wdD(''+d.id+'')">Word</button>'+
+        btnBaixarPDF+btnEnviar+
+        '<button class="brem" onclick="del(''+d.id+'','diarias')">X</button></div></div>';
+    }).join(''):'<div class="vz">Nenhuma diaria salva.</div>';
+
+    var lr=await fbLer('relatorios');
+    document.getElementById('lstR').innerHTML=lr.length?lr.map(function(r){
+      return '<div class="di"><div><h4>'+r.benef+' &gt; '+r.para+' <span class="tag tagR">Relatorio</span></h4>'+
+        '<p>'+r.ini+' a '+r.fim+' | '+r.qtd+' diarias | '+r.val+'</p>'+
+        '<p style="margin-top:3px">Salvo: '+(r.ts||'').slice(0,10)+'</p></div>'+
+        '<div class="dacts">'+
+        '<button class="btn bp" style="padding:6px 12px;font-size:.79rem" onclick="editarR(''+r.id+'')">Editar</button>'+
+        '<button class="btn bp" style="padding:6px 12px;font-size:.79rem;background:#2169c4" onclick="wdR(''+r.id+'')">Word</button>'+
+        '<button class="brem" onclick="del(''+r.id+'','relatorios')">X</button></div></div>';
+    }).join(''):'<div class="vz">Nenhum relatorio salvo.</div>';
+  }catch(e){
+    document.getElementById('lstD').innerHTML='<div class="vz">Erro ao carregar: '+e.message+'</div>';
+  }
+}
+
+async function renderStats(){
+  try{
+    var ld=await fbLer('diarias');
+    var lr=await fbLer('relatorios');
+    var tot=ld.reduce(function(a,x){return a+(x._totalNum||0);},0);
+    document.getElementById('stats').innerHTML=
+      '<div class="stat az"><div class="sv">'+ld.length+'</div><div class="sl">Diarias salvas</div></div>'+
+      '<div class="stat gr"><div class="sv">'+lr.length+'</div><div class="sl">Relatorios salvos</div></div>'+
+      '<div class="stat am"><div class="sv" style="font-size:1.3rem">'+brl(tot)+'</div><div class="sl">Total solicitado</div></div>';
+  }catch(e){}
+}
+
+function editarD(id){
+  ldgOn('Carregando...');
+  fbLer('diarias').then(function(lista){
+    ldgOff();
+    var d=lista.filter(function(x){return x.id===id;})[0]; if(!d) return;
+    editD=id; diariaAtualId=id;
+    function sv(el,v){var e=document.getElementById(el);if(e)e.value=v||'';}
+    function pr(s){return(s||'').replace('R$ ','').replace(',','.');}
+    var map={d_nome:d.nome,d_unid:d.unid,d_dept:d.dept,d_matr:d.matr,d_rg:d.rg,d_cpf:d.cpf,d_banco:d.banco,d_agenc:d.agenc,d_conta:d.conta,d_end:d.end,d_bair:d.bair,d_cida:d.cida,d_uf:d.uf,d_cep:d.cep,d_tel:d.tel,d_email:d.email,d_cargo:d.cargo,d_vp:pr(d.vp),d_vm:pr(d.vm),d_just:d.just,d_proc:d.proc};
+    Object.keys(map).forEach(function(k){sv(k,map[k]);});
+    if(d.mes) sv('d_mes', d.mes.indexOf('/')>-1 ? d.mes.split('/')[1]+'-'+((['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'].indexOf(d.mes.split('/')[0])+1)).toString().padStart(2,'0') : d.mes);
+    document.getElementById('tbP').innerHTML=''; document.getElementById('tbM').innerHTML=''; iP=0; iM=0;
+    (d.lP||[]).forEach(function(l){addP();var id2=iP;function sv2(pfx,v){var e=document.getElementById(pfx+id2);if(e)e.value=v||'';}sv2('po',l.orig);sv2('ps',dr(l.saida));sv2('ph',l.hsaida);sv2('pd',l.dest);sv2('pr',dr(l.ret));sv2('phr',l.hret);sv2('pq',l.qtd);});
+    (d.lM||[]).forEach(function(l){addM();var id2=iM;function sv2(pfx,v){var e=document.getElementById(pfx+id2);if(e)e.value=v||'';}sv2('mo',l.orig);sv2('ms',dr(l.saida));sv2('mh',l.hsaida);sv2('md',l.dest);sv2('mr',dr(l.ret));sv2('mhr',l.hret);sv2('mq',l.qtd);});
+    calcT(); aba('diaria');
+    // Verificar PDF assinado
+    document.getElementById('pdf_salvo_info').style.display='none';
+    document.getElementById('btn_enviar_profagua').style.display='none';
+    document.getElementById('btn_excluir_pdf').style.display='none';
+    pdfAssinadoB64=null;
+    DB.ref('usuarios/'+USER.key+'/pdfs_assinados/'+id).once('value').then(function(snap){
+      if(snap.val()){
+        pdfAssinadoB64=snap.val().pdf;
+        document.getElementById('pdf_salvo_info').style.display='block';
+        document.getElementById('btn_enviar_profagua').style.display='flex';
+        document.getElementById('btn_excluir_pdf').style.display='block';
+      }
+    });
+    // Verificar se ja foi enviado
+    if(d.enviado_profagua){
+      document.getElementById('btn_enviar_profagua').textContent='Ja enviado ao ProfAgua';
+      document.getElementById('btn_enviar_profagua').style.background='#166534';
+      document.getElementById('btn_enviar_profagua').disabled=true;
+    } else {
+      document.getElementById('btn_enviar_profagua').textContent='Enviar para ProfAgua';
+      document.getElementById('btn_enviar_profagua').style.background='#dc2626';
+      document.getElementById('btn_enviar_profagua').disabled=false;
+    }
+  });
+}
+
+function editarR(id){
+  fbLer('relatorios').then(function(lista){
+    var d=lista.filter(function(x){return x.id===id;})[0]; if(!d) return;
+    editR=id;
+    function sv(el,v){var e=document.getElementById(el);if(e)e.value=v||'';}
+    var map={r_ref:d.ref,r_proj:d.proj,r_de:d.de,r_para:d.para,r_qtd:d.qtd,r_comp:d.comp,r_obj:d.obj,r_benef:d.benef,r_cpf:d.cpf,r_coord:d.coord,r_ies:d.ies,r_loc:d.loc};
+    Object.keys(map).forEach(function(k){sv(k,map[k]);});
+    sv('r_ini',dr(d.ini)); sv('r_fim',dr(d.fim));
+    sv('r_val',(d.val||'').replace('R$ ','').replace(',','.'));
+    aba('relatorio');
+  });
+}
+
+function pdfD(id){fbLer('diarias').then(function(l){var d=l.filter(function(x){return x.id===id;})[0];if(d)gerarPDFD(d);});}
+function wdD(id){fbLer('diarias').then(function(l){var d=l.filter(function(x){return x.id===id;})[0];if(d)gerarDocxD(d);});}
+function pdfR(id){fbLer('relatorios').then(function(l){var d=l.filter(function(x){return x.id===id;})[0];if(d)gerarPDFR(d);});}
+function wdR(id){fbLer('relatorios').then(function(l){var d=l.filter(function(x){return x.id===id;})[0];if(d)gerarDocxR(d);});}
+
+async function del(id,tipo){
+  if(!confirm('Excluir este documento permanentemente?')) return;
+  try{ await fbDeletar(tipo,id); renderListas(); renderStats(); tk('Excluido.','ok'); }
+  catch(e){ tk('Erro ao excluir: '+e.message,'err'); }
+}
+
+function limD(){if(!confirm('Limpar formulario?'))return;editD=null;diariaAtualId=null;pdfAssinadoB64=null;['d_unid','d_dept','d_matr','d_rg','d_banco','d_agenc','d_conta','d_end','d_bair','d_cida','d_cep','d_tel','d_email','d_cargo','d_vp','d_vm','d_just','d_proc'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});document.getElementById('d_uf').value='MT';document.getElementById('tbP').innerHTML='';document.getElementById('tbM').innerHTML='';iP=0;iM=0;addP();addM();calcT();document.getElementById('pdf_salvo_info').style.display='none';document.getElementById('btn_enviar_profagua').style.display='none';document.getElementById('btn_excluir_pdf').style.display='none';document.getElementById('alerta_prazo').style.display='none';}
+function limR(){if(!confirm('Limpar?'))return;editR=null;['r_de','r_para','r_ini','r_fim','r_qtd','r_val','r_comp','r_obj','r_coord','r_loc'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});}
+
 </script>
 <div id="ajuda-btn" onclick="toggleAjuda()">❓ AJUDA</div>
 
