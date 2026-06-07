@@ -827,13 +827,19 @@ async function renderListas(){
     var pdfsObj = snapPDFs.val() || {};
     ld.forEach(function(d){ d._tem_pdf = !!pdfsObj[d.id]; });
     document.getElementById('lstD').innerHTML=ld.length?ld.map(function(d){
-      var temPDF = d.enviado_profagua ? ' <span style="color:#166534;font-size:.75rem">✔ Enviado</span>' : (d._tem_pdf ? ' <span style="color:#166534;font-size:.75rem">📄 PDF assinado</span>' : '');
-      return '<div class="di"><div><h4>'+d.nome+' <span class="tag tagD">Diária</span>'+temPDF+'</h4>'+
+      var tagEnvio = d.enviado_profagua
+        ? ' <span style="color:#166534;font-size:.75rem;font-weight:700">✔ Enviado ao ProfÁgua</span>'
+        : '';
+      var btnPDF = d._tem_pdf
+        ? '<button class="btn" style="padding:6px 12px;font-size:.79rem;background:#166534;color:#fff" onclick="baixarPDFAssinado(\''+d.id+'\')" title="Baixar PDF assinado">📄 PDF</button>'
+        : '<button class="btn" style="padding:6px 12px;font-size:.79rem;background:#6b7280;color:#fff;cursor:not-allowed" title="Sem PDF assinado" disabled>📄 PDF</button>';
+      return '<div class="di"><div><h4>'+d.nome+' <span class="tag tagD">Diária</span>'+tagEnvio+'</h4>'+
         '<p>'+(d.just||'').slice(0,65)+'</p>'+
         '<p style="margin-top:3px">'+d.total+' | '+(d.ts||'').slice(0,10)+'</p></div>'+
         '<div class="dacts">'+
         '<button class="btn bp" style="padding:6px 12px;font-size:.79rem" onclick="editarD(\''+d.id+'\')">Editar</button>'+
         '<button class="btn bp" style="padding:6px 12px;font-size:.79rem;background:#2169c4" onclick="wdD(\''+d.id+'\')">Word</button>'+
+        btnPDF+
         '<button class="brem" onclick="del(\''+d.id+'\',\'diarias\')">X</button></div></div>';
     }).join(''):'<div class="vz">Nenhuma diaria salva.</div>';
 
@@ -1301,6 +1307,26 @@ async function enviarParaProfagua() {
     tk('Erro ao enviar e-mail: ' + (e.text || e.message || JSON.stringify(e)), 'err');
   }
 }
+async function baixarPDFAssinado(did) {
+  ldgOn('Carregando PDF assinado...');
+  try {
+    var snap = await DB.ref('usuarios/' + USER.key + '/pdfs_assinados/' + did).once('value');
+    var dados = snap.val();
+    if (!dados || !dados.pdf) { ldgOff(); tk('PDF não encontrado.', 'err'); return; }
+    var a = document.createElement('a');
+    a.href = dados.pdf;
+    a.download = dados.nome || 'diaria_assinada.pdf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    ldgOff();
+    tk('PDF assinado baixado!', 'ok');
+  } catch(e) {
+    ldgOff();
+    tk('Erro: ' + e.message, 'err');
+  }
+}
+
 </script>
 </body>
 </html>
