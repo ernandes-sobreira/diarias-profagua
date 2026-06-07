@@ -1203,6 +1203,78 @@ async function del(id,tipo){
 function limD(){if(!confirm('Limpar formulario?'))return;editD=null;diariaAtualId=null;pdfAssinadoB64=null;['d_unid','d_dept','d_matr','d_rg','d_banco','d_agenc','d_conta','d_end','d_bair','d_cida','d_cep','d_tel','d_email','d_cargo','d_vp','d_vm','d_just','d_proc'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});document.getElementById('d_uf').value='MT';document.getElementById('tbP').innerHTML='';document.getElementById('tbM').innerHTML='';iP=0;iM=0;addP();addM();calcT();document.getElementById('pdf_salvo_info').style.display='none';document.getElementById('btn_enviar_profagua').style.display='none';document.getElementById('btn_excluir_pdf').style.display='none';document.getElementById('alerta_prazo').style.display='none';}
 function limR(){if(!confirm('Limpar?'))return;editR=null;['r_de','r_para','r_ini','r_fim','r_qtd','r_val','r_comp','r_obj','r_coord','r_loc'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});}
 
+function calcularDiasAntecedencia() {
+  var primeiraData = null;
+  document.querySelectorAll('#tbP tr').forEach(function(tr) {
+    var id = tr.id.replace('rp','');
+    var el = document.getElementById('ps'+id);
+    if (el && el.value && !primeiraData) primeiraData = el.value;
+  });
+  if (!primeiraData) {
+    document.querySelectorAll('#tbM tr').forEach(function(tr) {
+      var id = tr.id.replace('rm','');
+      var el = document.getElementById('ms'+id);
+      if (el && el.value && !primeiraData) primeiraData = el.value;
+    });
+  }
+  var alerta = document.getElementById('alerta_prazo');
+  if (!alerta) return null;
+  if (!primeiraData) { alerta.style.display='none'; return null; }
+  var hoje = new Date(); hoje.setHours(0,0,0,0);
+  var saida = new Date(primeiraData + 'T00:00:00');
+  var diff = Math.ceil((saida - hoje) / (1000*60*60*24));
+  if (diff < 0) {
+    alerta.className = 'alerta-prazo err';
+    alerta.textContent = 'Data de saida ja passou! Verifique as datas.';
+  } else if (diff < 15) {
+    alerta.className = 'alerta-prazo err';
+    alerta.textContent = 'ATENCAO: Faltam apenas ' + diff + ' dia(s). O Manual da FUNDUNESP exige minimo de 15 dias de antecedencia.';
+  } else if (diff < 20) {
+    alerta.className = 'alerta-prazo warn';
+    alerta.textContent = 'Atencao: Faltam ' + diff + ' dias. Envie sua solicitacao em breve (minimo: 15 dias).';
+  } else {
+    alerta.className = 'alerta-prazo ok';
+    alerta.textContent = 'Prazo OK: ' + diff + ' dias de antecedencia (minimo exigido: 15 dias).';
+  }
+  return diff;
+}
+
+function uploadPDFAssinado(input) {
+  var file = input.files[0];
+  if (!file) return;
+  if (!file.name.toLowerCase().endsWith('.pdf')) { tk('Selecione um arquivo PDF.', 'err'); return; }
+  if (!diariaAtualId) { tk('Salve a diaria primeiro antes de fazer o upload.', 'inf'); return; }
+  if (file.size > 3 * 1024 * 1024) { tk('Arquivo muito grande. Maximo 3MB.', 'err'); return; }
+  ldgOn('Salvando PDF assinado...');
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    pdfAssinadoB64 = e.target.result;
+    DB.ref('usuarios/' + USER.key + '/pdfs_assinados/' + diariaAtualId).set({
+      nome: file.name,
+      data: new Date().toISOString(),
+      pdf: pdfAssinadoB64
+    }).then(function() {
+      ldgOff();
+      document.getElementById('pdf_salvo_info').style.display = 'block';
+      document.getElementById('btn_enviar_profagua').style.display = 'flex';
+      var btnExcluir = document.getElementById('btn_excluir_pdf');
+      if(btnExcluir) btnExcluir.style.display = 'block';
+      document.getElementById('area_upload_pdf').style.opacity = '0.5';
+      tk('PDF assinado salvo!', 'ok');
+    }).catch(function(e) {
+      ldgOff();
+      tk('Erro ao salvar PDF: ' + e.message, 'err');
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+function abrirGovBr() {
+  if (!diariaAtualId) { tk('Salve a diaria primeiro antes de assinar.', 'inf'); return; }
+  window.open('https://assinador.iti.br', '_blank');
+  tk('Apos assinar no gov.br, volte aqui e faca o upload do PDF assinado.', 'inf');
+}
+
 function novaDiaria() {
   editD = null;
   diariaAtualId = null;
