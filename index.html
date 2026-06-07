@@ -162,7 +162,7 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
     <div class="g g3">
       <div class="f"><label>Matricula <span class="r">*</span></label><input id="d_matr" type="text"/></div>
       <div class="f"><label>RG <span class="r">*</span></label><input id="d_rg" type="text" placeholder="0000000 SSP/MT"/></div>
-      <div class="f"><label>CPF</label><input id="d_cpf" type="text" readonly/></div>
+      <div class="f"><label>CPF</label><input id="d_cpf" type="text" placeholder="000.000.000-00" maxlength="14" oninput="mCPF(this)"/></div>
     </div>
     <div class="g g3">
       <div class="f"><label>Banco</label><input id="d_banco" type="text" placeholder="Banco do Brasil"/></div>
