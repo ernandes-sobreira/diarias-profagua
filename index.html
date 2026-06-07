@@ -446,7 +446,7 @@ function fbAtualizar(tipo, id, dados) {
 
 // Carregar perfil do usuário do Firebase
 function carregarPerfil() {
-  var PF = ['d_unid','d_dept','d_matr','d_rg','d_banco','d_agenc','d_conta',
+  var PF = ['d_unid','d_dept','d_matr','d_rg','d_cpf','d_banco','d_agenc','d_conta',
             'd_end','d_bair','d_cida','d_uf','d_cep','d_tel','d_email','d_cargo'];
   DB.ref('usuarios/' + USER.key + '/perfil').once('value').then(function(snap) {
     var p = snap.val() || {};
@@ -457,7 +457,7 @@ function carregarPerfil() {
 }
 
 function salvarPerfil() {
-  var PF = ['d_unid','d_dept','d_matr','d_rg','d_banco','d_agenc','d_conta',
+  var PF = ['d_unid','d_dept','d_matr','d_rg','d_cpf','d_banco','d_agenc','d_conta',
             'd_end','d_bair','d_cida','d_uf','d_cep','d_tel','d_email','d_cargo'];
   var p = {};
   PF.forEach(function(id) { var e = document.getElementById(id); if (e) p[id] = e.value; });
