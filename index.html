@@ -259,6 +259,9 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
       <div style="font-size:.82rem;color:#4a5a6e">Após assinar pelo gov.br, clique aqui para enviar o PDF assinado</div>
     </div>
     <input type="file" id="input_pdf_assinado" accept=".pdf" style="display:none" onchange="uploadPDFAssinado(this)"/>
+    <div id="btn_excluir_pdf" style="display:none;margin-top:6px">
+      <button class="btn" style="background:#dc2626;color:#fff;font-size:.82rem;padding:5px 12px" onclick="excluirPDFAssinado()">🗑 Excluir PDF assinado</button>
+    </div>
   </div>
   <div style="margin-top:8px">
     <button class="btn" style="background:#dc2626;color:#fff;width:100%;justify-content:center;display:none" id="btn_enviar_profagua" onclick="enviarParaProfagua()">&#9993; Enviar para ProfÁgua</button>
@@ -918,6 +921,7 @@ function pdfR(id){fbLer('relatorios').then(function(l){var d=l.filter(function(x
 function wdR(id){fbLer('relatorios').then(function(l){var d=l.filter(function(x){return x.id===id;})[0];if(d)gerarDocxR(d);});}
 
 async function del(id,tipo){
+  if (!confirm('Excluir este documento? Esta ação não pode ser desfeita.')) return;
   if(!confirm('Excluir permanentemente?')) return;
   try{ await fbDeletar(tipo,id); renderListas(); renderStats(); tk('Excluido.','ok'); }
   catch(e){ tk('Erro ao excluir: '+e.message,'err'); }
@@ -1040,6 +1044,7 @@ function uploadPDFAssinado(input) {
       document.getElementById('pdf_salvo_info').style.display = 'block';
       document.getElementById('btn_enviar_profagua').style.display = 'flex';
       document.getElementById('area_upload_pdf').style.opacity = '0.5';
+      document.getElementById('btn_excluir_pdf').style.display = 'block';
       tk('PDF assinado salvo com sucesso!', 'ok');
     }).catch(function(e) {
       ldgOff();
@@ -1133,6 +1138,7 @@ salvarD = async function(tipo) {
         pdfAssinadoB64 = snap.val().pdf;
         document.getElementById('pdf_salvo_info').style.display = 'block';
         document.getElementById('btn_enviar_profagua').style.display = 'flex';
+        document.getElementById('btn_excluir_pdf').style.display = 'block';
         var jaEnviado = false;
         fbLer('diarias').then(function(lista) {
           var diaria = lista.filter(function(x){ return x.id === id; })[0];
@@ -1157,7 +1163,8 @@ salvarD = async function(tipo) {
 // ============================================================
 var ADMINS = [
   'xnob5hHsrDdxdxKi3R2VPNwQtv23',
-  'y39GeOJgVQeyHQYsxrJcpbpvpo32'
+  'y39GeOJgVQeyHQYsxrJcpbpvpo32',
+  'nGx5LBDrafa10Ej5gCze1un3jXN2'
 ];
 
 function isAdmin() {
@@ -1347,6 +1354,26 @@ async function enviarDiretoDaLista(did) {
 
   await enviarParaProfagua();
   renderListas();
+}
+
+async function excluirPDFAssinado() {
+  if (!diariaAtualId) { tk('Nenhuma diária selecionada.', 'err'); return; }
+  if (!confirm('Excluir o PDF assinado desta diária? Esta ação não pode ser desfeita.')) return;
+  ldgOn('Excluindo PDF...');
+  try {
+    await DB.ref('usuarios/' + USER.key + '/pdfs_assinados/' + diariaAtualId).remove();
+    pdfAssinadoB64 = null;
+    document.getElementById('pdf_salvo_info').style.display = 'none';
+    document.getElementById('btn_enviar_profagua').style.display = 'none';
+    document.getElementById('btn_excluir_pdf').style.display = 'none';
+    document.getElementById('area_upload_pdf').style.opacity = '1';
+    document.getElementById('input_pdf_assinado').value = '';
+    ldgOff();
+    tk('PDF assinado excluído. Faça novo upload quando estiver pronto.', 'ok');
+  } catch(e) {
+    ldgOff();
+    tk('Erro ao excluir: ' + e.message, 'err');
+  }
 }
 
 </script>
