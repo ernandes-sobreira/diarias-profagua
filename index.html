@@ -280,6 +280,20 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
   <div style="margin-top:8px">
     <button class="btn" style="background:#dc2626;color:#fff;width:100%;justify-content:center;display:none" id="btn_enviar_profagua" onclick="enviarParaProfagua()">&#9993; Enviar para ProfÁgua</button>
   </div>
+
+  <div style="margin-top:14px;border-top:1px solid #e2e8f0;padding-top:12px">
+    <div style="font-weight:600;color:#1a4f8a;font-size:.9rem;margin-bottom:6px">&#128196; Documento de Convocação (opcional)</div>
+    <div id="conv_salvo_info" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 12px;margin-bottom:8px;font-size:.84rem;color:#166534;display:flex;align-items:center;gap:8px">
+      ✅ Convocação salva.
+      <button onclick="baixarConvocacao()" style="background:#166534;color:#fff;border:none;border-radius:6px;padding:3px 10px;cursor:pointer;font-size:.78rem">⬇ Baixar</button>
+      <button onclick="excluirConvocacao()" style="background:#dc2626;color:#fff;border:none;border-radius:6px;padding:3px 10px;cursor:pointer;font-size:.78rem">🗑 Excluir</button>
+    </div>
+    <div class="upload-zone" style="padding:12px;border-style:dashed;opacity:.85" onclick="document.getElementById('input_conv').click()">
+      <div style="font-size:1.2rem">📎</div>
+      <div style="font-weight:600;color:#1a4f8a;font-size:.84rem">Clique para anexar convocação (PDF)</div>
+    </div>
+    <input type="file" id="input_conv" accept=".pdf" style="display:none" onchange="uploadConvocacao(this)"/>
+  </div>
 </div>
 
 <div class="sec" id="s-relatorio">
@@ -357,6 +371,7 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
 </footer>
 
 <div class="sec" id="s-admin">
+  <div id="admin_resumo" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:18px"></div>
   <div class="card">
     <div class="ctit" style="color:#1a4f8a">&#128274; Painel Administrativo — Todas as Solicitações</div>
     <div style="margin-bottom:12px;font-size:.88rem;color:#4a5a6e">Visível apenas para administradores do sistema.</div>
@@ -800,10 +815,37 @@ async function carregarAdmin() {
         d._uid = uid;
         d._usuario_nome = info.nome || uid;
         d._tem_pdf = !!(usuario.pdfs_assinados && usuario.pdfs_assinados[did]);
+        d._tem_conv = !!(usuario.convocacoes && usuario.convocacoes[did]);
         todasDiarias.push(d);
       });
     });
     todasDiarias.sort(function(a,b){ return (b.ts||'').localeCompare(a.ts||''); });
+
+    // Painel resumo por docente
+    var resumoPorDocente = {};
+    todasDiarias.forEach(function(d) {
+      var nome = d.nome || d._usuario_nome || 'Desconhecido';
+      if (!resumoPorDocente[nome]) resumoPorDocente[nome] = {total:0, qtd:0};
+      resumoPorDocente[nome].total += (d._totalNum||0);
+      resumoPorDocente[nome].qtd++;
+    });
+    var resumoDiv = document.getElementById('admin_resumo');
+    if (resumoDiv) {
+      var totalGeral = todasDiarias.reduce(function(a,d){return a+(d._totalNum||0);},0);
+      var html = '<div style="background:#1a4f8a;color:#fff;border-radius:10px;padding:14px 18px;grid-column:1/-1">' +
+        '<div style="font-size:.78rem;opacity:.8">TOTAL GERAL SOLICITADO</div>' +
+        '<div style="font-size:1.5rem;font-weight:800">R$ ' + totalGeral.toLocaleString('pt-BR',{minimumFractionDigits:2}) + '</div>' +
+        '<div style="font-size:.78rem;opacity:.8;margin-top:2px">' + todasDiarias.length + ' solicitação(ões) de ' + Object.keys(resumoPorDocente).length + ' docente(s)</div></div>';
+      Object.keys(resumoPorDocente).sort().forEach(function(nome) {
+        var r = resumoPorDocente[nome];
+        html += '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 16px">' +
+          '<div style="font-weight:700;font-size:.88rem;color:#1a4f8a;margin-bottom:4px">' + nome + '</div>' +
+          '<div style="font-size:1.1rem;font-weight:800;color:#166534">R$ ' + r.total.toLocaleString('pt-BR',{minimumFractionDigits:2}) + '</div>' +
+          '<div style="font-size:.75rem;color:#64748b">' + r.qtd + ' solicitação(ões)</div></div>';
+      });
+      resumoDiv.innerHTML = html;
+    }
+
     if (!todasDiarias.length) {
       lista.innerHTML = '<div class="vz">Nenhuma solicitação encontrada.</div>';
       return;
@@ -837,6 +879,14 @@ async function carregarAdmin() {
       b2.textContent = 'Editar';
       b2.onclick = (function(uid,did){ return function(){ adminEditarDiaria(uid,did); }; })(d._uid, d.id);
       btns.appendChild(b2);
+      if (d._tem_conv) {
+        var bconv = document.createElement('button');
+        bconv.className = 'btn';
+        bconv.style.cssText = 'padding:5px 12px;font-size:.8rem;background:#166534;color:#fff';
+        bconv.textContent = '📎 Convocação';
+        bconv.onclick = (function(uid,did){ return function(){ adminBaixarConvocacao(uid,did); }; })(d._uid, d.id);
+        btns.appendChild(bconv);
+      }
       var b3 = document.createElement('button');
       b3.className = 'btn';
       b3.style.cssText = 'padding:5px 12px;font-size:.8rem;background:#dc2626;color:#fff';
@@ -1177,6 +1227,7 @@ function editarD(id){
         document.getElementById('btn_excluir_pdf').style.display='block';
       }
     });
+    DB.ref('usuarios/'+USER.key+'/convocacoes/'+id).once('value').then(function(snap){ if(snap.val()) document.getElementById('conv_salvo_info').style.display='flex'; else document.getElementById('conv_salvo_info').style.display='none'; });
     // Verificar se ja foi enviado
     if(d.enviado_profagua){
       document.getElementById('btn_enviar_profagua').textContent='Ja enviado ao ProfAgua';
@@ -1364,6 +1415,7 @@ async function adminEditarDiaria(uid, did) {
     // Resetar status de PDF/envio
     pdfAssinadoB64=null;
     document.getElementById('pdf_salvo_info').style.display='none';
+    document.getElementById('conv_salvo_info').style.display='none';
     document.getElementById('btn_enviar_profagua').style.display='none';
     var btnExcluir = document.getElementById('btn_excluir_pdf');
     if(btnExcluir) btnExcluir.style.display='none';
@@ -1378,12 +1430,71 @@ async function adminEditarDiaria(uid, did) {
       }
     });
 
+    DB.ref('usuarios/' + uid + '/convocacoes/' + did).once('value').then(function(snap){ document.getElementById('conv_salvo_info').style.display = snap.val() ? 'flex' : 'none'; });
     aba('diaria');
     tk('Editando solicitacao de ' + (d.nome||'') + '. Salve para confirmar as alteracoes.', 'inf');
   } catch(e) {
     ldgOff();
     tk('Erro: ' + e.message, 'err');
   }
+}
+
+// ============================================================
+// CONVOCAÇÃO
+// ============================================================
+function uploadConvocacao(input) {
+  var file = input.files[0];
+  if (!file) return;
+  if (!file.name.toLowerCase().endsWith('.pdf')) { tk('Selecione um arquivo PDF.', 'err'); return; }
+  if (!diariaAtualId) { tk('Salve a diária primeiro.', 'inf'); return; }
+  if (file.size > 3 * 1024 * 1024) { tk('Arquivo muito grande. Máximo 3MB.', 'err'); return; }
+  ldgOn('Salvando convocação...');
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    DB.ref('usuarios/' + USER.key + '/convocacoes/' + diariaAtualId).set({
+      nome: file.name, data: new Date().toISOString(), pdf: e.target.result
+    }).then(function() {
+      ldgOff();
+      document.getElementById('conv_salvo_info').style.display = 'flex';
+      document.getElementById('input_conv').value = '';
+      tk('Convocação salva!', 'ok');
+    }).catch(function(err) { ldgOff(); tk('Erro: ' + err.message, 'err'); });
+  };
+  reader.readAsDataURL(file);
+}
+
+async function baixarConvocacao() {
+  if (!diariaAtualId) return;
+  ldgOn('Carregando...');
+  try {
+    var snap = await DB.ref('usuarios/' + USER.key + '/convocacoes/' + diariaAtualId).once('value');
+    var d = snap.val();
+    if (!d || !d.pdf) { ldgOff(); tk('Convocação não encontrada.', 'err'); return; }
+    var a = document.createElement('a');
+    a.href = d.pdf; a.download = d.nome || 'convocacao.pdf'; a.click();
+    ldgOff();
+  } catch(e) { ldgOff(); tk('Erro: ' + e.message, 'err'); }
+}
+
+async function excluirConvocacao() {
+  if (!confirm('Excluir convocação?')) return;
+  if (!diariaAtualId) return;
+  await DB.ref('usuarios/' + USER.key + '/convocacoes/' + diariaAtualId).remove();
+  document.getElementById('conv_salvo_info').style.display = 'none';
+  document.getElementById('input_conv').value = '';
+  tk('Convocação excluída.', 'ok');
+}
+
+async function adminBaixarConvocacao(uid, did) {
+  ldgOn('Carregando convocação...');
+  try {
+    var snap = await DB.ref('usuarios/' + uid + '/convocacoes/' + did).once('value');
+    var d = snap.val();
+    if (!d || !d.pdf) { ldgOff(); tk('Convocação não encontrada.', 'err'); return; }
+    var a = document.createElement('a');
+    a.href = d.pdf; a.download = d.nome || 'convocacao.pdf'; a.click();
+    ldgOff();
+  } catch(e) { ldgOff(); tk('Erro: ' + e.message, 'err'); }
 }
 
 </script>
