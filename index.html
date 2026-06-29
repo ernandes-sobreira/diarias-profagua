@@ -333,25 +333,25 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px">
           <label style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;padding:8px 11px;background:#f0f6ff;border-radius:7px;border:1.5px solid #bfdbfe">
-            <input type="checkbox" id="comp_passagem" style="width:16px;height:16px;accent-color:#1a4f8a"/> Passagem (ônibus/aéreo)
+            <input type="checkbox" id="comp_passagem" style="width:16px;height:16px;accent-color:#1a4f8a"/> Passagem (&#244;nibus/a&#233;reo)
           </label>
           <label style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;padding:8px 11px;background:#f0f6ff;border-radius:7px;border:1.5px solid #bfdbfe">
             <input type="checkbox" id="comp_hotel" style="width:16px;height:16px;accent-color:#1a4f8a"/> Hospedagem / Hotel
           </label>
           <label style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;padding:8px 11px;background:#f0f6ff;border-radius:7px;border:1.5px solid #bfdbfe">
-            <input type="checkbox" id="comp_alimentacao" style="width:16px;height:16px;accent-color:#1a4f8a"/> Alimentação
+            <input type="checkbox" id="comp_alimentacao" style="width:16px;height:16px;accent-color:#1a4f8a"/> Alimenta&#231;&#227;o
           </label>
           <label style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;padding:8px 11px;background:#f0f6ff;border-radius:7px;border:1.5px solid #bfdbfe">
             <input type="checkbox" id="comp_transporte" style="width:16px;height:16px;accent-color:#1a4f8a"/> Transporte local
           </label>
           <label style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;padding:8px 11px;background:#f0f6ff;border-radius:7px;border:1.5px solid #bfdbfe">
-            <input type="checkbox" id="comp_certificado" style="width:16px;height:16px;accent-color:#1a4f8a"/> Certificado de participação
+            <input type="checkbox" id="comp_certificado" style="width:16px;height:16px;accent-color:#1a4f8a"/> Certificado de participa&#231;&#227;o
           </label>
           <label style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;padding:8px 11px;background:#f0f6ff;border-radius:7px;border:1.5px solid #bfdbfe">
             <input type="checkbox" id="comp_nf" style="width:16px;height:16px;accent-color:#1a4f8a"/> Nota fiscal
           </label>
         </div>
-        <input type="text" id="comp_outros" placeholder="Outros comprovantes (descreva)..." style="font-size:.93rem;border:1.5px solid #b8d0ee;border-radius:7px;padding:8px 11px;background:#f5f7fb;width:100%"/>
+        <input type="text" id="comp_outros" placeholder="Outros comprovantes..." style="font-size:.93rem;border:1.5px solid #b8d0ee;border-radius:7px;padding:8px 11px;background:#f5f7fb;width:100%"/>
       </div>
     </div>
   </div>
@@ -370,39 +370,33 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
     </div>
   </div>
   <div class="card" style="border:2px solid #166534;background:#f0fdf4">
-    <div class="ctit" style="color:#166534">&#128196; Enviar Documentos para o ProfÁgua</div>
-    <p style="font-size:.86rem;color:#4a5a6e;margin-bottom:13px">Anexe o relatório assinado e os comprovantes. Todos ficam salvos na nuvem e visíveis para o administrador.</p>
+    <div class="ctit" style="color:#166534">&#128196; Enviar Documentos para o Profagua</div>
+    <p style="font-size:.86rem;color:#4a5a6e;margin-bottom:13px">Anexe o relatorio assinado e os comprovantes. Ficam salvos na nuvem e visiveis para o administrador.</p>
     <div style="display:flex;flex-direction:column;gap:10px">
       <div class="f">
-        <label>Relatório de Viagem assinado (PDF/Word) <span class="r">*</span></label>
-        <input type="file" id="upload_relatorio" accept=".pdf,.doc,.docx" style="font-size:.88rem;padding:7px;border:1.5px dashed #86efac;border-radius:7px;background:#f0fdf4;width:100%"/>
-        <div id="upload_rel_status" style="font-size:.78rem;color:#166534;margin-top:3px"></div>
+        <label>Relatorio de Viagem assinado (PDF/Word) <span class="r">*</span></label>
+        <input type="file" id="upload_relatorio" accept=".pdf,.doc,.docx" style="font-size:.88rem;padding:7px;border:1.5px dashed #86efac;border-radius:7px;background:#f0fdf4;width:100%;font-family:inherit"/>
       </div>
       <div class="f">
-        <label>Comprovantes adicionais (múltiplos arquivos)</label>
-        <input type="file" id="upload_comprovantes" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" multiple style="font-size:.88rem;padding:7px;border:1.5px dashed #86efac;border-radius:7px;background:#f0fdf4;width:100%"/>
-        <div id="upload_comp_status" style="font-size:.78rem;color:#166534;margin-top:3px"></div>
+        <label>Comprovantes adicionais (multiplos arquivos)</label>
+        <input type="file" id="upload_comprovantes" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" multiple style="font-size:.88rem;padding:7px;border:1.5px dashed #86efac;border-radius:7px;background:#f0fdf4;width:100%;font-family:inherit"/>
       </div>
-      <div id="upload_lista" style="display:none;background:#fff;border-radius:8px;padding:10px;border:1px solid #86efac">
-        <div style="font-size:.82rem;font-weight:600;color:#166534;margin-bottom:6px">Arquivos selecionados:</div>
-        <div id="upload_lista_itens" style="display:flex;flex-direction:column;gap:4px;font-size:.82rem"></div>
-      </div>
+      <div id="upload_lista" style="display:none;background:#fff;border-radius:8px;padding:10px;border:1px solid #86efac;font-size:.82rem"></div>
       <button class="btn" style="background:#166534;color:#fff;align-self:flex-start" onclick="enviarParaProfAgua()">
-        &#128228; Salvar e Enviar para o ProfÁgua
+        &#128228; Salvar e Enviar para o Profagua
       </button>
-      <div id="upload_progress" style="display:none;font-size:.85rem;color:#166534;font-weight:600"></div>
+      <div id="upload_progress" style="display:none;font-size:.85rem;color:#166534;font-weight:600;padding:6px 0"></div>
     </div>
   </div>
-
   <div class="card" style="border:2px solid #1351b4;background:#f0f4ff">
-    <div class="ctit" style="color:#1351b4">&#128394; Assinatura Digital via Gov.br</div>
-    <p style="font-size:.86rem;color:#4a5a6e;margin-bottom:13px">Após salvar o relatório, baixe o Word ou PDF, assine digitalmente pelo portal Gov.br e envie para profagua@unesp.br.</p>
+    <div class="ctit" style="color:#1351b4">&#9997; Assinatura Digital via Gov.br</div>
+    <p style="font-size:.86rem;color:#4a5a6e;margin-bottom:13px">Apos salvar o relatorio, baixe o Word ou PDF, assine digitalmente pelo portal Gov.br e envie para profagua@unemat.br.</p>
     <a href="https://www.gov.br/pt-br/servicos/assinatura-eletronica" target="_blank"
        style="display:inline-flex;align-items:center;gap:8px;background:#1351b4;color:#fff;font-weight:700;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:.9rem;margin-bottom:10px">
       &#9997; Acessar Assinatura Gov.br
     </a>
     <div style="font-size:.82rem;color:#4a5a6e;background:#e8f0fe;border-radius:7px;padding:9px 12px">
-      <strong>Passo a passo:</strong> Salve → Baixe Word/PDF → Acesse Gov.br → Selecione o arquivo → Assine → Envie para <strong>profagua@unesp.br</strong>
+      <strong>Passo a passo:</strong> Salve &#8594; Baixe Word/PDF &#8594; Assine no Gov.br &#8594; Envie pelo sistema
     </div>
   </div>
   <div class="al" id="r_al">Preencha os campos obrigatorios.</div>
@@ -632,11 +626,10 @@ window.addEventListener('DOMContentLoaded', function() {
     if (el) el.src = [LU,LF,LU,LF][i];
   });
   document.getElementById('d_data').value = new Date().toISOString().slice(0,10);
-  // Listeners upload
-  var upRel = document.getElementById('upload_relatorio');
-  var upComp = document.getElementById('upload_comprovantes');
-  if (upRel) upRel.addEventListener('change', atualizarListaUpload);
-  if (upComp) upComp.addEventListener('change', atualizarListaUpload);
+  var upRel=document.getElementById('upload_relatorio');
+  var upComp=document.getElementById('upload_comprovantes');
+  if(upRel) upRel.addEventListener('change',atualizarListaUpload);
+  if(upComp) upComp.addEventListener('change',atualizarListaUpload);
 
   // Inicializar Firebase
   try {
@@ -893,15 +886,14 @@ function validD(d){ return d.unid&&d.matr&&d.rg&&d.just; }
 
 function coletarR(){
   var comps=[];
-  if(document.getElementById('comp_passagem')&&document.getElementById('comp_passagem').checked) comps.push('Passagem (onibus/aereo)');
+  if(document.getElementById('comp_passagem')&&document.getElementById('comp_passagem').checked) comps.push('Passagem');
   if(document.getElementById('comp_hotel')&&document.getElementById('comp_hotel').checked) comps.push('Hospedagem/Hotel');
   if(document.getElementById('comp_alimentacao')&&document.getElementById('comp_alimentacao').checked) comps.push('Alimentacao');
   if(document.getElementById('comp_transporte')&&document.getElementById('comp_transporte').checked) comps.push('Transporte local');
-  if(document.getElementById('comp_certificado')&&document.getElementById('comp_certificado').checked) comps.push('Certificado de participacao');
+  if(document.getElementById('comp_certificado')&&document.getElementById('comp_certificado').checked) comps.push('Certificado');
   if(document.getElementById('comp_nf')&&document.getElementById('comp_nf').checked) comps.push('Nota fiscal');
   var outros=g('comp_outros'); if(outros) comps.push(outros);
-  var comp=comps.join(', ');
-  return {ref:g('r_ref'),proj:g('r_proj'),de:g('r_de'),para:g('r_para'),ini:fd(g('r_ini')),fim:fd(g('r_fim')),qtd:g('r_qtd'),val:brl(g('r_val')),comp:comp,obj:g('r_obj'),benef:g('r_benef'),cpf:g('r_cpf'),coord:g('r_coord'),ies:g('r_ies'),loc:g('r_loc')};
+  return {ref:g('r_ref'),proj:g('r_proj'),de:g('r_de'),para:g('r_para'),ini:fd(g('r_ini')),fim:fd(g('r_fim')),qtd:g('r_qtd'),val:brl(g('r_val')),comp:comps.join(', '),obj:g('r_obj'),benef:g('r_benef'),cpf:g('r_cpf'),coord:g('r_coord'),ies:g('r_ies'),loc:g('r_loc')};
 }
 function validR(d){ return d.de&&d.para&&d.ini&&d.fim&&d.obj&&d.benef&&d.coord; }
 
@@ -1100,70 +1092,52 @@ async function carregarAdmin() {
       div.appendChild(btns);
       lista.appendChild(div);
     });
-    // Carregar relatórios com arquivos enviados
-    var relDiv = document.createElement('div');
-    relDiv.className = 'card';
-    relDiv.style.cssText = 'margin-top:16px;border-color:#86efac';
-    relDiv.innerHTML = '<div class="ctit" style="color:#166534">&#128196; Relatórios com Documentos Enviados</div>';
-    lista.appendChild(relDiv);
-
-    var todosRels = [];
-    Object.keys(todos).forEach(function(uid2) {
-      var usuario = todos[uid2];
-      var info = usuario.info || {};
-      var arqs = usuario.arquivos_relatorio || {};
-      Object.keys(arqs).forEach(function(rid) {
-        var r = arqs[rid];
-        r._uid = uid2;
-        r._usuario_nome = info.nome || uid2;
-        todosRels.push(r);
+    // Relatorios com arquivos
+    var relCard=document.createElement('div');
+    relCard.className='card';
+    relCard.style.cssText='margin-top:16px;border-color:#86efac';
+    relCard.innerHTML='<div class="ctit" style="color:#166534">&#128196; Relatorios com Documentos Enviados</div>';
+    lista.appendChild(relCard);
+    var todosRels=[];
+    Object.keys(todos).forEach(function(u2){
+      var usuario=todos[u2]; var info=usuario.info||{};
+      var arqs=usuario.arquivos_relatorio||{};
+      Object.keys(arqs).forEach(function(rid){
+        var r=arqs[rid]; r._uid=u2; r._uname=info.nome||u2; todosRels.push(r);
       });
     });
-    todosRels.sort(function(a,b){ return (b.ts||'').localeCompare(a.ts||''); });
-
-    if (!todosRels.length) {
-      var vz = document.createElement('div');
-      vz.className = 'vz'; vz.textContent = 'Nenhum relatório com documentos enviado ainda.';
-      relDiv.appendChild(vz);
+    todosRels.sort(function(a,b){return (b.ts||'').localeCompare(a.ts||'');});
+    if(!todosRels.length){
+      var vz=document.createElement('div'); vz.className='vz';
+      vz.textContent='Nenhum relatorio enviado ainda.'; relCard.appendChild(vz);
     } else {
-      todosRels.forEach(function(r) {
-        var div = document.createElement('div');
-        div.className = 'di';
-        div.style.cssText = 'border-color:#86efac';
-        var arqsObj = r.arquivos || {};
-        var nArqs = Object.keys(arqsObj).length;
-        div.innerHTML = '<div><h4>' + (r.nome_usuario||'') +
-          ' <span class="tag tagR">Relatório</span></h4>' +
-          '<p>' + (r.ts||'').slice(0,10) + ' · ' + nArqs + ' arquivo(s)</p></div>' +
-          '<div class="dacts">' +
-          Object.keys(arqsObj).map(function(k) {
-            var arq = arqsObj[k];
-            return '<button class="btn bp" style="padding:5px 12px;font-size:.78rem" onclick="adminBaixarArquivo('' +
-              r._uid + '','' + r.relatorio_id + '','' + k + '')">' +
-              '&#128229; ' + (arq.nome||k) + '</button>';
-          }).join('') + '</div>';
-        relDiv.appendChild(div);
+      todosRels.forEach(function(r){
+        var div=document.createElement('div'); div.className='di';
+        div.style.cssText='border-color:#86efac';
+        var arqsObj=r.arquivos||{}; var nA=Object.keys(arqsObj).length;
+        var btnsHtml=Object.keys(arqsObj).map(function(k){
+          var arq=arqsObj[k];
+          return '<button class="btn bp" style="padding:5px 12px;font-size:.78rem" onclick="adminBaixarArquivo(''+r._uid+'',''+r.relatorio_id+'',''+k+'')">&#128229; '+(arq.nome||k)+'</button>';
+        }).join('');
+        div.innerHTML='<div><h4>'+(r._uname||'')+' <span class="tag tagR">Relatorio</span></h4><p>'+(r.ts||'').slice(0,10)+' &middot; '+nA+' arquivo(s)</p></div><div class="dacts">'+btnsHtml+'</div>';
+        relCard.appendChild(div);
       });
     }
-
   } catch(e) {
     lista.innerHTML = '<div class="vz" style="color:#991b1b">Erro: ' + e.message + '</div>';
   }
 }
 
-async function adminBaixarArquivo(uid2, relId, arqKey) {
-  ldgOn('Baixando arquivo...');
-  try {
-    var snap = await DB.ref('usuarios/' + uid2 + '/arquivos_relatorio/' + relId + '/arquivos/' + arqKey).once('value');
-    var arq = snap.val();
-    ldgOff();
-    if (!arq || !arq.dados) { tk('Arquivo não encontrado.', 'err'); return; }
-    var a = document.createElement('a');
-    a.href = arq.dados;
-    a.download = arq.nome || arqKey;
+async function adminBaixarArquivo(uid2,relId,arqKey){
+  ldgOn('Baixando...');
+  try{
+    var snap=await DB.ref('usuarios/'+uid2+'/arquivos_relatorio/'+relId+'/arquivos/'+arqKey).once('value');
+    var arq=snap.val(); ldgOff();
+    if(!arq||!arq.dados){tk('Arquivo nao encontrado.','err');return;}
+    var a=document.createElement('a'); a.href=arq.dados; a.download=arq.nome||arqKey;
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    tk('Download iniciado: ' + (arq.nome||arqKey), 'ok');
-  } catch(e) { ldgOff(); tk('Erro: ' + e.message, 'err'); }
+    tk('Download: '+(arq.nome||arqKey),'ok');
+  }catch(e){ldgOff();tk('Erro: '+e.message,'err');}
 }
 
 async function adminBaixarPDF(uid, did) {
@@ -1533,122 +1507,70 @@ async function del(id,tipo){
 function limD(){if(!confirm('Limpar formulario?'))return;editD=null;diariaAtualId=null;pdfAssinadoB64=null;['d_unid','d_dept','d_matr','d_rg','d_banco','d_agenc','d_conta','d_end','d_bair','d_cida','d_cep','d_tel','d_email','d_cargo','d_vp','d_vm','d_just'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});document.getElementById('d_uf').value='MT';document.getElementById('tbP').innerHTML='';document.getElementById('tbM').innerHTML='';iP=0;iM=0;addP();addM();calcT();document.getElementById('pdf_salvo_info').style.display='none';document.getElementById('btn_enviar_profagua').style.display='none';document.getElementById('btn_excluir_pdf').style.display='none';document.getElementById('alerta_prazo').style.display='none';}
 function limR(){if(!confirm('Limpar?'))return;editR=null;['r_de','r_para','r_ini','r_fim','r_qtd','r_val','r_obj','r_coord','r_loc','comp_outros'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});['comp_passagem','comp_hotel','comp_alimentacao','comp_transporte','comp_certificado','comp_nf'].forEach(function(id){var e=document.getElementById(id);if(e)e.checked=false;});}
 
-// ============================================================
-// UPLOAD E ENVIO PARA PROFÁGUA
-// ============================================================
-
-// Mostrar lista de arquivos selecionados
-function atualizarListaUpload() {
-  var rel = document.getElementById('upload_relatorio');
-  var comp = document.getElementById('upload_comprovantes');
-  var lista = document.getElementById('upload_lista');
-  var itens = document.getElementById('upload_lista_itens');
-  var todos = [];
-  if (rel && rel.files.length) {
-    Array.from(rel.files).forEach(function(f) { todos.push('📄 ' + f.name + ' (' + (f.size/1024).toFixed(0) + 'KB)'); });
-  }
-  if (comp && comp.files.length) {
-    Array.from(comp.files).forEach(function(f) { todos.push('📎 ' + f.name + ' (' + (f.size/1024).toFixed(0) + 'KB)'); });
-  }
-  if (todos.length) {
-    lista.style.display = 'block';
-    itens.innerHTML = todos.map(function(t){ return '<div>' + t + '</div>'; }).join('');
-  } else {
-    lista.style.display = 'none';
-    itens.innerHTML = '';
-  }
-}
-
-// Converter arquivo para base64
-function fileToBase64(file) {
-  return new Promise(function(res, rej) {
-    if (file.size > 5 * 1024 * 1024) { rej(new Error('Arquivo "' + file.name + '" maior que 5MB')); return; }
-    var reader = new FileReader();
-    reader.onload = function(e) { res(e.target.result); };
-    reader.onerror = function() { rej(new Error('Erro ao ler ' + file.name)); };
-    reader.readAsDataURL(file);
+// Upload para Firebase
+function fileToBase64(file){
+  return new Promise(function(res,rej){
+    if(file.size>5*1024*1024){rej(new Error('Arquivo "'+file.name+'" maior que 5MB'));return;}
+    var r=new FileReader();
+    r.onload=function(e){res(e.target.result);};
+    r.onerror=function(){rej(new Error('Erro ao ler '+file.name));};
+    r.readAsDataURL(file);
   });
 }
 
-async function enviarParaProfAgua() {
-  if (!USER) { tk('Faça login primeiro.', 'err'); return; }
-  var relInput = document.getElementById('upload_relatorio');
-  var compInput = document.getElementById('upload_comprovantes');
-  var prog = document.getElementById('upload_progress');
+function atualizarListaUpload(){
+  var rel=document.getElementById('upload_relatorio');
+  var comp=document.getElementById('upload_comprovantes');
+  var lista=document.getElementById('upload_lista');
+  if(!lista) return;
+  var todos=[];
+  if(rel&&rel.files.length) Array.from(rel.files).forEach(function(f){todos.push('&#128196; '+f.name+' ('+(f.size/1024).toFixed(0)+'KB)');});
+  if(comp&&comp.files.length) Array.from(comp.files).forEach(function(f){todos.push('&#128206; '+f.name+' ('+(f.size/1024).toFixed(0)+'KB)');});
+  if(todos.length){lista.style.display='block';lista.innerHTML='<strong>Arquivos selecionados:</strong><br>'+todos.join('<br>');}
+  else{lista.style.display='none';lista.innerHTML='';}
+}
 
-  if (!relInput || !relInput.files.length) {
-    tk('Selecione ao menos o relatório assinado.', 'err'); return;
-  }
-
-  // Primeiro salvar o relatório se ainda não foi salvo
-  var d = coletarR();
-  if (!validR(d)) { show('r_al', 'err'); return; }
+async function enviarParaProfAgua(){
+  if(!USER){tk('Faca login primeiro.','err');return;}
+  var relInput=document.getElementById('upload_relatorio');
+  var compInput=document.getElementById('upload_comprovantes');
+  var prog=document.getElementById('upload_progress');
+  if(!relInput||!relInput.files.length){tk('Selecione o relatorio assinado.','err');return;}
+  var d=coletarR();
+  if(!validR(d)){show('r_al','err');return;}
   hide('r_al');
-
-  ldgOn('Preparando arquivos...');
-  prog.style.display = 'block';
-
-  try {
-    // Salvar relatório no Firebase
-    var relId = editR || uid();
-    await fbSalvar('relatorios', relId, Object.assign({}, d, {id: relId, ts: new Date().toISOString()}));
-
-    // Converter e salvar arquivos
-    var arquivos = {};
-    var totalArqs = relInput.files.length + (compInput ? compInput.files.length : 0);
-    var idx = 0;
-
-    // Relatório assinado
-    for (var i = 0; i < relInput.files.length; i++) {
-      var f = relInput.files[i];
-      prog.textContent = 'Enviando ' + (++idx) + '/' + totalArqs + ': ' + f.name;
-      var b64 = await fileToBase64(f);
-      arquivos['relatorio_' + i] = {nome: f.name, tipo: f.type, dados: b64, ts: new Date().toISOString()};
+  ldgOn('Enviando documentos...');
+  prog.style.display='block';
+  try{
+    var relId=editR||uid();
+    await fbSalvar('relatorios',relId,Object.assign({},d,{id:relId,ts:new Date().toISOString()}));
+    var arquivos={};
+    var total=relInput.files.length+(compInput?compInput.files.length:0);
+    var idx2=0;
+    for(var i=0;i<relInput.files.length;i++){
+      var f=relInput.files[i];
+      prog.textContent='Enviando '+(++idx2)+'/'+total+': '+f.name;
+      arquivos['relatorio_'+i]={nome:f.name,tipo:f.type,dados:await fileToBase64(f),ts:new Date().toISOString()};
     }
-
-    // Comprovantes
-    if (compInput && compInput.files.length) {
-      for (var i = 0; i < compInput.files.length; i++) {
-        var f = compInput.files[i];
-        prog.textContent = 'Enviando ' + (++idx) + '/' + totalArqs + ': ' + f.name;
-        var b64 = await fileToBase64(f);
-        arquivos['comprovante_' + i] = {nome: f.name, tipo: f.type, dados: b64, ts: new Date().toISOString()};
+    if(compInput&&compInput.files.length){
+      for(var i=0;i<compInput.files.length;i++){
+        var f=compInput.files[i];
+        prog.textContent='Enviando '+(++idx2)+'/'+total+': '+f.name;
+        arquivos['comprovante_'+i]={nome:f.name,tipo:f.type,dados:await fileToBase64(f),ts:new Date().toISOString()};
       }
     }
-
-    // Salvar arquivos no Firebase vinculados ao relatório
-    await DB.ref('usuarios/' + USER.key + '/arquivos_relatorio/' + relId).set({
-      arquivos: arquivos,
-      nome_usuario: USER.nome,
-      cpf: USER.cpf || '',
-      ts: new Date().toISOString(),
-      relatorio_id: relId,
-      status: 'enviado'
+    await DB.ref('usuarios/'+USER.key+'/arquivos_relatorio/'+relId).set({
+      arquivos:arquivos,nome_usuario:USER.nome,cpf:USER.cpf||'',
+      ts:new Date().toISOString(),relatorio_id:relId,status:'enviado'
     });
-
-    // Atualizar relatório com flag de arquivos enviados
-    await DB.ref('usuarios/' + USER.key + '/relatorios/' + relId).update({
-      tem_arquivos: true,
-      total_arquivos: totalArqs,
-      ts_envio: new Date().toISOString()
-    });
-
-    editR = relId;
-    ldgOff();
-    prog.style.display = 'none';
-    tk('Documentos enviados com sucesso! O ProfÁgua foi notificado.', 'ok');
-    
-    // Limpar inputs
-    relInput.value = '';
-    if (compInput) compInput.value = '';
+    await DB.ref('usuarios/'+USER.key+'/relatorios/'+relId).update({tem_arquivos:true,total_arquivos:total,ts_envio:new Date().toISOString()});
+    editR=relId;
+    ldgOff(); prog.style.display='none';
+    relInput.value=''; if(compInput) compInput.value='';
     atualizarListaUpload();
+    tk('Documentos enviados! Visiveis no painel Admin.','ok');
     renderStats();
-
-  } catch(e) {
-    ldgOff();
-    prog.style.display = 'none';
-    tk('Erro: ' + e.message, 'err');
-  }
+  }catch(e){ldgOff();prog.style.display='none';tk('Erro: '+e.message,'err');}
 }
 
 var EMAILJS_SERVICE = 'service_sutafkf';
@@ -1742,11 +1664,10 @@ function novaDiaria() {
   });
   // Resetar data para hoje
   document.getElementById('d_data').value = new Date().toISOString().slice(0,10);
-  // Listeners upload
-  var upRel = document.getElementById('upload_relatorio');
-  var upComp = document.getElementById('upload_comprovantes');
-  if (upRel) upRel.addEventListener('change', atualizarListaUpload);
-  if (upComp) upComp.addEventListener('change', atualizarListaUpload);
+  var upRel=document.getElementById('upload_relatorio');
+  var upComp=document.getElementById('upload_comprovantes');
+  if(upRel) upRel.addEventListener('change',atualizarListaUpload);
+  if(upComp) upComp.addEventListener('change',atualizarListaUpload);
   // Resetar status de PDF/envio
   document.getElementById('pdf_salvo_info').style.display = 'none';
   document.getElementById('btn_enviar_profagua').style.display = 'none';
