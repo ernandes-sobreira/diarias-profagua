@@ -1119,7 +1119,10 @@ async function carregarAdmin() {
         var btnsHtml='';
         Object.keys(arqsObj).forEach(function(k){
           var arq=arqsObj[k];
-          var nm=(arq.nome||k); var nmEx=nm.length>28?nm.slice(0,25)+'...':nm;
+          var nm=(arq.nome||k);
+          // Pegar só o nome do arquivo sem path
+          var nmBase = nm.split('/').pop().split('\\').pop();
+          var nmEx = nmBase.length>30 ? nmBase.slice(0,27)+'...' : nmBase;
           var btn=document.createElement('button');
           btn.className='btn bp';
           btn.style.cssText='padding:5px 11px;font-size:.78rem';
@@ -1207,7 +1210,7 @@ async function enviarParaProfagua() {
 
   var params = {
     tipo_doc: 'SOLICITACAO DE DIARIAS',
-    mensagem_intro: 'O(A) discente/colaborador(a) <strong>' + (d.nome||USER.nome) + '</strong> encaminha, por meio do Sistema de Diarias ProfAgua/UNEMAT, solicitacao de pagamento de diarias referente ao mes de <strong>' + (d.mes||'') + '</strong>, devidamente assinada digitalmente.',
+    mensagem_intro: 'O(A) beneficiario(a) ' + (d.nome||USER.nome) + ' encaminha, por meio do Sistema de Diarias ProfAgua/UNEMAT, solicitacao de pagamento de diarias referente ao mes de ' + (d.mes||'') + ', devidamente assinada digitalmente.',
     nome_beneficiado: d.nome || USER.nome,
     mes_referencia: d.mes || '',
     valor_total: d.total || '',
@@ -1587,7 +1590,7 @@ async function enviarParaProfAgua(){
       var nArqStr = Object.keys(arquivos).length + ' arquivo(s)';
       await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
         tipo_doc: 'RELATORIO DE VIAGEM ENVIADO',
-        mensagem_intro: 'O(A) discente/colaborador(a) <strong>' + (d.benef||USER.nome) + '</strong> enviou o Relatorio de Viagem pelo Sistema de Diarias ProfAgua/UNEMAT, com documentos anexados para prestacao de contas.',
+        mensagem_intro: 'O(A) beneficiario(a) ' + (d.benef||USER.nome) + ' enviou o Relatorio de Viagem pelo Sistema de Diarias ProfAgua/UNEMAT, com documentos anexados para prestacao de contas.',
         nome_beneficiado: d.benef || USER.nome,
         mes_referencia: (d.ini||'') + ' a ' + (d.fim||''),
         valor_total: d.val || '',
