@@ -1115,12 +1115,19 @@ async function carregarAdmin() {
         var div=document.createElement('div'); div.className='di';
         div.style.cssText='border-color:#86efac';
         var arqsObj=r.arquivos||{}; var nA=Object.keys(arqsObj).length;
-        var btnsHtml=Object.keys(arqsObj).map(function(k){
+        var btnsHtml='';
+        Object.keys(arqsObj).forEach(function(k){
           var arq=arqsObj[k];
-          var nomeArq=(arq.nome||k); var nomeExib=nomeArq.length>28?nomeArq.slice(0,25)+'...':nomeArq;
-          return '<button class="btn bp" style="padding:5px 12px;font-size:.78rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+nomeArq+'" onclick="adminBaixarArquivo(\'\'+r._uid+'\',\'\'+r.relatorio_id+'\',\'\'+k+'\')">⬇️ '+nomeExib+'</button>';
-        }).join('');
-        div.innerHTML='<div><h4>'+(r.nome_usuario||r._uname||r._uid||'')+' <span class="tag tagR">Relatorio</span></h4><p>'+(r.ts||'').slice(0,10)+' &middot; '+nA+' arquivo(s)</p></div><div class="dacts">'+btnsHtml+'</div>';
+          var nomeExib=(arq.nome||k).length>28?(arq.nome||k).slice(0,25)+'...':(arq.nome||k);
+          var btn=document.createElement('button');
+          btn.className='btn bp';
+          btn.style.cssText='padding:5px 12px;font-size:.78rem';
+          btn.textContent='Baixar: '+nomeExib;
+          btn.title=arq.nome||k;
+          btn.onclick=(function(u2,rid,ak){return function(){adminBaixarArquivo(u2,rid,ak);};})(r._uid,r.relatorio_id,k);
+          btnsHtml+=btn.outerHTML;
+        });
+        div.innerHTML='<div><h4>'+(r._uname||'')+' <span class="tag tagR">Relatorio</span></h4><p>'+(r.ts||'').slice(0,10)+' &middot; '+nA+' arquivo(s)</p></div><div class="dacts">'+btnsHtml+'</div>';
         relCard.appendChild(div);
       });
     }
@@ -1566,29 +1573,6 @@ async function enviarParaProfAgua(){
     });
     await DB.ref('usuarios/'+USER.key+'/relatorios/'+relId).update({tem_arquivos:true,total_arquivos:total,ts_envio:new Date().toISOString()});
     editR=relId;
-
-    // Enviar email para a coordenação
-    try {
-      var nArqStr = Object.keys(arquivos).length + ' arquivo(s)';
-      await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
-        nome_beneficiado: d.benef || USER.nome,
-        mes_referencia: d.ini + ' a ' + d.fim,
-        valor_total: d.val || '',
-        destino: d.para || '',
-        justificativa: 'RELATÓRIO DE VIAGEM ENVIADO. Objetivo: ' + (d.obj||'').slice(0,200) + ' | Comprovantes: ' + (d.comp||'') + ' | Arquivos: ' + nArqStr,
-        numero_processo: d.ref || '',
-        dias_antecedencia: '0',
-        data_saida: d.ini || '',
-        email_beneficiado: USER.email || '',
-        link_sistema: 'https://ernandes-sobreira.github.io/diarias-profagua/',
-        name: d.benef || USER.nome,
-        email: USER.email || ''
-      });
-      tk('Email enviado para a coordenação!','ok');
-    } catch(emailErr) {
-      console.warn('Email nao enviado:', emailErr);
-    }
-
     ldgOff(); prog.style.display='none';
     relInput.value=''; if(compInput) compInput.value='';
     atualizarListaUpload();
