@@ -330,7 +330,33 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
       <div class="f"><label>Valor Total (R$) <span class="r">*</span></label><input id="r_val" type="number" min="0" step="0.01"/></div>
     </div>
     <div class="f"><label>Comprovantes / documentos anexos</label>
-      <textarea id="r_comp" rows="2" placeholder="Passagem, hospedagem, nota fiscal..."></textarea></div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px">
+          <label style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;padding:8px 11px;background:#f0f6ff;border-radius:7px;border:1.5px solid #bfdbfe">
+            <input type="checkbox" id="comp_passagem" style="width:16px;height:16px;accent-color:#1a4f8a"/> Passagem (ônibus/aéreo)
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;padding:8px 11px;background:#f0f6ff;border-radius:7px;border:1.5px solid #bfdbfe">
+            <input type="checkbox" id="comp_hotel" style="width:16px;height:16px;accent-color:#1a4f8a"/> Hospedagem / Hotel
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;padding:8px 11px;background:#f0f6ff;border-radius:7px;border:1.5px solid #bfdbfe">
+            <input type="checkbox" id="comp_alimentacao" style="width:16px;height:16px;accent-color:#1a4f8a"/> Alimentação
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;padding:8px 11px;background:#f0f6ff;border-radius:7px;border:1.5px solid #bfdbfe">
+            <input type="checkbox" id="comp_transporte" style="width:16px;height:16px;accent-color:#1a4f8a"/> Transporte local
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;padding:8px 11px;background:#f0f6ff;border-radius:7px;border:1.5px solid #bfdbfe">
+            <input type="checkbox" id="comp_certificado" style="width:16px;height:16px;accent-color:#1a4f8a"/> Certificado de participação
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;padding:8px 11px;background:#f0f6ff;border-radius:7px;border:1.5px solid #bfdbfe">
+            <input type="checkbox" id="comp_nf" style="width:16px;height:16px;accent-color:#1a4f8a"/> Nota fiscal
+          </label>
+        </div>
+        <div class="f" style="margin-top:4px">
+          <label style="font-size:.71rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#2169c4">Outros comprovantes</label>
+          <input type="text" id="comp_outros" placeholder="Descreva outros comprovantes..." style="font-size:.93rem;border:1.5px solid #b8d0ee;border-radius:7px;padding:8px 11px;background:#f5f7fb;width:100%"/>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="card">
     <div class="ctit">Objetivo e Assinaturas</div>
@@ -344,6 +370,21 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
       <div class="f"><label>Nome do Coordenador <span class="r">*</span></label><input id="r_coord" type="text" placeholder="Nome do coordenador"/></div>
       <div class="f"><label>IES</label><input id="r_ies" type="text" value="UNEMAT - Campus Caceres"/></div>
       <div class="f"><label>Local e Data</label><input id="r_loc" type="text" placeholder="Caceres, dd de mes de aaaa"/></div>
+    </div>
+  </div>
+  <div class="card" style="border:2px solid #1351b4;background:#f0f4ff">
+    <div class="ctit" style="color:#1351b4">&#128394; Assinatura Digital via Gov.br</div>
+    <p style="font-size:.86rem;color:#4a5a6e;margin-bottom:13px">Após salvar o relatório, baixe o Word/PDF, assine digitalmente pelo portal Gov.br e reenvie o documento assinado.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <a href="https://www.gov.br/pt-br/servicos/assinatura-eletronica" target="_blank"
+         style="display:inline-flex;align-items:center;gap:8px;background:#1351b4;color:#fff;font-weight:700;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:.9rem">
+        <img src="https://www.gov.br/++theme++padrao_govbr/img/logo-govbr-colorido.png" style="height:20px" onerror="this.style.display='none'"/>
+        Acessar Assinatura Gov.br
+      </a>
+      <span style="font-size:.82rem;color:#4a5a6e">Acesso com CPF + senha ou certificado digital</span>
+    </div>
+    <div style="margin-top:11px;font-size:.82rem;color:#4a5a6e;background:#e8f0fe;border-radius:7px;padding:9px 12px">
+      <strong>Passo a passo:</strong> Salve o relatório → Baixe o Word ou PDF → Acesse o Gov.br → Selecione o arquivo → Assine → Envie para <strong>profagua@unesp.br</strong>
     </div>
   </div>
   <div class="al" id="r_al">Preencha os campos obrigatorios.</div>
@@ -828,7 +869,12 @@ function coletarD(){
 function validD(d){ return d.unid&&d.matr&&d.rg&&d.just; }
 
 function coletarR(){
-  return {ref:g('r_ref'),proj:g('r_proj'),de:g('r_de'),para:g('r_para'),ini:fd(g('r_ini')),fim:fd(g('r_fim')),qtd:g('r_qtd'),val:brl(g('r_val')),comp:g('r_comp'),obj:g('r_obj'),benef:g('r_benef'),cpf:g('r_cpf'),coord:g('r_coord'),ies:g('r_ies'),loc:g('r_loc')};
+  var comps=[];
+  var chks={comp_passagem:'Passagem (onibus/aereo)',comp_hotel:'Hospedagem/Hotel',comp_alimentacao:'Alimentacao',comp_transporte:'Transporte local',comp_certificado:'Certificado de participacao',comp_nf:'Nota fiscal'};
+  Object.keys(chks).forEach(function(id){var el=document.getElementById(id);if(el&&el.checked)comps.push(chks[id]);});
+  var outros=g('comp_outros'); if(outros) comps.push(outros);
+  var comp=comps.length?comps.join(', '):'';
+  return {ref:g('r_ref'),proj:g('r_proj'),de:g('r_de'),para:g('r_para'),ini:fd(g('r_ini')),fim:fd(g('r_fim')),qtd:g('r_qtd'),val:brl(g('r_val')),comp:comp,obj:g('r_obj'),benef:g('r_benef'),cpf:g('r_cpf'),coord:g('r_coord'),ies:g('r_ies'),loc:g('r_loc')};
 }
 function validR(d){ return d.de&&d.para&&d.ini&&d.fim&&d.obj&&d.benef&&d.coord; }
 
@@ -1219,7 +1265,7 @@ async function salvarD(tipo){
   }catch(e){ ldgOff(); tk('Erro ao salvar: '+e.message,'err'); }
 }
 
-async function salvarR(tipo){
+async async function salvarR(tipo){
   var d=coletarR();
   if(!validR(d)){ show('r_al','err'); return; }
   hide('r_al');
@@ -1397,7 +1443,7 @@ async function del(id,tipo){
 }
 
 function limD(){if(!confirm('Limpar formulario?'))return;editD=null;diariaAtualId=null;pdfAssinadoB64=null;['d_unid','d_dept','d_matr','d_rg','d_banco','d_agenc','d_conta','d_end','d_bair','d_cida','d_cep','d_tel','d_email','d_cargo','d_vp','d_vm','d_just'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});document.getElementById('d_uf').value='MT';document.getElementById('tbP').innerHTML='';document.getElementById('tbM').innerHTML='';iP=0;iM=0;addP();addM();calcT();document.getElementById('pdf_salvo_info').style.display='none';document.getElementById('btn_enviar_profagua').style.display='none';document.getElementById('btn_excluir_pdf').style.display='none';document.getElementById('alerta_prazo').style.display='none';}
-function limR(){if(!confirm('Limpar?'))return;editR=null;['r_de','r_para','r_ini','r_fim','r_qtd','r_val','r_comp','r_obj','r_coord','r_loc'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});}
+function limR(){if(!confirm('Limpar?'))return;editR=null;['r_de','r_para','r_ini','r_fim','r_qtd','r_val','r_obj','r_coord','r_loc','comp_outros'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});['comp_passagem','comp_hotel','comp_alimentacao','comp_transporte','comp_certificado','comp_nf'].forEach(function(id){var e=document.getElementById(id);if(e)e.checked=false;});}
 
 var EMAILJS_SERVICE = 'service_sutafkf';
 var EMAILJS_TEMPLATE = 'template_inoo1th';
