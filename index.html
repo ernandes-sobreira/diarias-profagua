@@ -1119,10 +1119,7 @@ async function carregarAdmin() {
         var btnsHtml='';
         Object.keys(arqsObj).forEach(function(k){
           var arq=arqsObj[k];
-          var nm=(arq.nome||k);
-          // Pegar só o nome do arquivo sem path
-          var nmBase = nm.split('/').pop().split('\\').pop();
-          var nmEx = nmBase.length>30 ? nmBase.slice(0,27)+'...' : nmBase;
+          var nm=arq.nome||''; if(!nm||nm.length<3) nm=k; var nmBase=nm.split('/').pop(); var nmEx=nmBase.length>30?nmBase.slice(0,27)+'...':nmBase;
           var btn=document.createElement('button');
           btn.className='btn bp';
           btn.style.cssText='padding:5px 11px;font-size:.78rem';
@@ -1134,13 +1131,63 @@ async function carregarAdmin() {
         // linha substituida
         // removido
         // removido
+        var btnDel=document.createElement('button');
+        btnDel.className='brem';
+        btnDel.style.cssText='font-size:.78rem';
+        btnDel.textContent='X Excluir';
+        btnDel.onclick=(function(u2,rid){return function(){
+          if(!confirm('Excluir arquivos deste relatorio?')) return;
+          ldgOn('Excluindo...');
+          DB.ref('usuarios/'+u2+'/arquivos_relatorio/'+rid).remove()
+            .then(function(){
+              return DB.ref('usuarios/'+u2+'/relatorios/'+rid).update({tem_arquivos:false,total_arquivos:0});
+            })
+            .then(function(){ldgOff();tk('Excluido.','ok');carregarAdmin();})
+            .catch(function(e){ldgOff();tk('Erro: '+e.message,'err');});
+        };})(r._uid,r.relatorio_id);
         div.innerHTML='<div><h4>'+(r.nome_usuario||r._uname||r._uid||'')+' <span class="tag tagR">Relatorio</span></h4><p>'+(r.ts||'').slice(0,10)+' &middot; '+nA+' arquivo(s)</p></div><div class="dacts">'+btnsHtml+'</div>';
+        div.querySelector('.dacts').appendChild(btnDel);
         relCard.appendChild(div);
       });
     }
   } catch(e) {
     lista.innerHTML = '<div class="vz" style="color:#991b1b">Erro: ' + e.message + '</div>';
   }
+}
+
+async function delArquivosRelatorio(relId){
+  if(!confirm('Excluir os arquivos enviados deste relatorio? Os dados do relatorio serao mantidos.')) return;
+  ldgOn('Excluindo...');
+  try{
+    await DB.ref('usuarios/'+USER.key+'/arquivos_relatorio/'+relId).remove();
+    await DB.ref('usuarios/'+USER.key+'/relatorios/'+relId).update({tem_arquivos:false,total_arquivos:0});
+    ldgOff();
+    tk('Arquivos excluidos.','ok');
+    renderListas();
+  }catch(e){ldgOff();tk('Erro: '+e.message,'err');}
+}
+
+async function verArquivosRelatorio(relId){
+  ldgOn('Carregando arquivos...');
+  try{
+    var snap=await DB.ref('usuarios/'+USER.key+'/arquivos_relatorio/'+relId+'/arquivos').once('value');
+    var arqs=snap.val()||{};
+    ldgOff();
+    var keys=Object.keys(arqs);
+    if(!keys.length){tk('Nenhum arquivo encontrado.','err');return;}
+    var msg='Arquivos do relatorio:\n\n';
+    keys.forEach(function(k,i){msg+=(i+1)+'. '+(arqs[k].nome||k)+'\n';});
+    if(confirm(msg+'\nClique OK para baixar todos.')){
+      keys.forEach(function(k){
+        var arq=arqs[k];
+        if(!arq||!arq.dados) return;
+        var a=document.createElement('a');
+        a.href=arq.dados; a.download=arq.nome||k;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      });
+      tk('Downloads iniciados!','ok');
+    }
+  }catch(e){ldgOff();tk('Erro: '+e.message,'err');}
 }
 
 async function adminBaixarArquivo(uid2,relId,arqKey){
@@ -1438,7 +1485,9 @@ async function renderListas(){
         '<div class="dacts">'+
         '<button class="btn bp" style="padding:6px 12px;font-size:.79rem" onclick="editarR(\''+r.id+'\')">&gt; Editar</button>'+
         '<button class="btn bp" style="padding:6px 12px;font-size:.79rem;background:#2169c4" onclick="wdR(\''+r.id+'\')">&gt; Word</button>'+
-        '<button class="brem" onclick="del(this.dataset.id,\'relatorios\')" data-id="'+r.id+'">X</button></div></div>';
+        (r.tem_arquivos ? '<button class="btn" style="padding:6px 12px;font-size:.79rem;background:#166534;color:#fff" onclick="verArquivosRelatorio(\''+r.id+'\')">&gt; Arquivos ('+r.total_arquivos+')</button>' : '')+
+        (r.tem_arquivos ? '<button class="brem" style="font-size:.79rem" onclick="delArquivosRelatorio(\''+r.id+'\')">&otimes; Del Arq.</button>' : '')+
+        '<button class="brem" onclick="del(this.dataset.id,\'relatorios\')" data-id="'+r.id+'">X Rel.</button></div></div>';
     }).join(''):'<div class="vz">Nenhum relatorio salvo.</div>';
   }catch(e){
     document.getElementById('lstD').innerHTML='<div class="vz">Erro ao carregar: '+e.message+'</div>';
