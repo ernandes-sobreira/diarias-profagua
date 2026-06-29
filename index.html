@@ -1115,18 +1115,22 @@ async function carregarAdmin() {
         var div=document.createElement('div'); div.className='di';
         div.style.cssText='border-color:#86efac';
         var arqsObj=r.arquivos||{}; var nA=Object.keys(arqsObj).length;
+        // removido duplicata
         var btnsHtml='';
         Object.keys(arqsObj).forEach(function(k){
           var arq=arqsObj[k];
-          var nomeExib=(arq.nome||k).length>28?(arq.nome||k).slice(0,25)+'...':(arq.nome||k);
+          var nm=(arq.nome||k); var nmEx=nm.length>28?nm.slice(0,25)+'...':nm;
           var btn=document.createElement('button');
           btn.className='btn bp';
-          btn.style.cssText='padding:5px 12px;font-size:.78rem';
-          btn.textContent='Baixar: '+nomeExib;
-          btn.title=arq.nome||k;
+          btn.style.cssText='padding:5px 11px;font-size:.78rem';
+          btn.textContent='Baixar: '+nmEx;
+          btn.title=nm;
           btn.onclick=(function(u2,rid,ak){return function(){adminBaixarArquivo(u2,rid,ak);};})(r._uid,r.relatorio_id,k);
           btnsHtml+=btn.outerHTML;
         });
+        // linha substituida
+        // removido
+        // removido
         div.innerHTML='<div><h4>'+(r._uname||'')+' <span class="tag tagR">Relatorio</span></h4><p>'+(r.ts||'').slice(0,10)+' &middot; '+nA+' arquivo(s)</p></div><div class="dacts">'+btnsHtml+'</div>';
         relCard.appendChild(div);
       });
@@ -1573,10 +1577,37 @@ async function enviarParaProfAgua(){
     });
     await DB.ref('usuarios/'+USER.key+'/relatorios/'+relId).update({tem_arquivos:true,total_arquivos:total,ts_envio:new Date().toISOString()});
     editR=relId;
+
+    // Enviar email para coordenação via EmailJS (mesmo template da diária)
+    try {
+      var nArqStr = Object.keys(arquivos).length + ' arquivo(s)';
+      await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+        nome_beneficiado: d.benef || USER.nome,
+        mes_referencia: 'RELATORIO: ' + (d.ini||'') + ' a ' + (d.fim||''),
+        valor_total: d.val || '',
+        destino: d.para || '',
+        justificativa: 'RELATORIO DE VIAGEM de ' + (d.benef||USER.nome) +
+          '. Periodo: ' + (d.ini||'') + ' a ' + (d.fim||'') +
+          '. Objetivo: ' + (d.obj||'').slice(0,150) +
+          '. Comprovantes: ' + (d.comp||'Nao informado') +
+          '. Arquivos: ' + nArqStr + '. Acesse o Admin para baixar.',
+        numero_processo: d.ref || '3572/2024',
+        dias_antecedencia: d.qtd || '',
+        data_saida: d.ini || '',
+        email_beneficiado: USER.email || '',
+        link_sistema: 'https://ernandes-sobreira.github.io/diarias-profagua/',
+        name: d.benef || USER.nome,
+        email: USER.email || ''
+      });
+      tk('Email enviado para a coordenacao!', 'ok');
+    } catch(emailErr) {
+      console.warn('Email nao enviado:', emailErr);
+    }
+
     ldgOff(); prog.style.display='none';
     relInput.value=''; if(compInput) compInput.value='';
     atualizarListaUpload();
-    tk('Documentos enviados! Visiveis no painel Admin.','ok');
+    tk('Documentos salvos e enviados!','ok');
     renderStats();
   }catch(e){ldgOff();prog.style.display='none';tk('Erro: '+e.message,'err');}
 }
