@@ -369,6 +369,31 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
       <div class="f"><label>Local e Data</label><input id="r_loc" type="text" placeholder="Caceres, dd de mes de aaaa"/></div>
     </div>
   </div>
+  <div class="card" style="border:2px solid #166534;background:#f0fdf4">
+    <div class="ctit" style="color:#166534">&#128196; Enviar Documentos para o ProfÁgua</div>
+    <p style="font-size:.86rem;color:#4a5a6e;margin-bottom:13px">Anexe o relatório assinado e os comprovantes. Todos ficam salvos na nuvem e visíveis para o administrador.</p>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="f">
+        <label>Relatório de Viagem assinado (PDF/Word) <span class="r">*</span></label>
+        <input type="file" id="upload_relatorio" accept=".pdf,.doc,.docx" style="font-size:.88rem;padding:7px;border:1.5px dashed #86efac;border-radius:7px;background:#f0fdf4;width:100%"/>
+        <div id="upload_rel_status" style="font-size:.78rem;color:#166534;margin-top:3px"></div>
+      </div>
+      <div class="f">
+        <label>Comprovantes adicionais (múltiplos arquivos)</label>
+        <input type="file" id="upload_comprovantes" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" multiple style="font-size:.88rem;padding:7px;border:1.5px dashed #86efac;border-radius:7px;background:#f0fdf4;width:100%"/>
+        <div id="upload_comp_status" style="font-size:.78rem;color:#166534;margin-top:3px"></div>
+      </div>
+      <div id="upload_lista" style="display:none;background:#fff;border-radius:8px;padding:10px;border:1px solid #86efac">
+        <div style="font-size:.82rem;font-weight:600;color:#166534;margin-bottom:6px">Arquivos selecionados:</div>
+        <div id="upload_lista_itens" style="display:flex;flex-direction:column;gap:4px;font-size:.82rem"></div>
+      </div>
+      <button class="btn" style="background:#166534;color:#fff;align-self:flex-start" onclick="enviarParaProfAgua()">
+        &#128228; Salvar e Enviar para o ProfÁgua
+      </button>
+      <div id="upload_progress" style="display:none;font-size:.85rem;color:#166534;font-weight:600"></div>
+    </div>
+  </div>
+
   <div class="card" style="border:2px solid #1351b4;background:#f0f4ff">
     <div class="ctit" style="color:#1351b4">&#128394; Assinatura Digital via Gov.br</div>
     <p style="font-size:.86rem;color:#4a5a6e;margin-bottom:13px">Após salvar o relatório, baixe o Word ou PDF, assine digitalmente pelo portal Gov.br e envie para profagua@unesp.br.</p>
@@ -607,6 +632,11 @@ window.addEventListener('DOMContentLoaded', function() {
     if (el) el.src = [LU,LF,LU,LF][i];
   });
   document.getElementById('d_data').value = new Date().toISOString().slice(0,10);
+  // Listeners upload
+  var upRel = document.getElementById('upload_relatorio');
+  var upComp = document.getElementById('upload_comprovantes');
+  if (upRel) upRel.addEventListener('change', atualizarListaUpload);
+  if (upComp) upComp.addEventListener('change', atualizarListaUpload);
 
   // Inicializar Firebase
   try {
@@ -1070,9 +1100,70 @@ async function carregarAdmin() {
       div.appendChild(btns);
       lista.appendChild(div);
     });
+    // Carregar relatórios com arquivos enviados
+    var relDiv = document.createElement('div');
+    relDiv.className = 'card';
+    relDiv.style.cssText = 'margin-top:16px;border-color:#86efac';
+    relDiv.innerHTML = '<div class="ctit" style="color:#166534">&#128196; Relatórios com Documentos Enviados</div>';
+    lista.appendChild(relDiv);
+
+    var todosRels = [];
+    Object.keys(todos).forEach(function(uid2) {
+      var usuario = todos[uid2];
+      var info = usuario.info || {};
+      var arqs = usuario.arquivos_relatorio || {};
+      Object.keys(arqs).forEach(function(rid) {
+        var r = arqs[rid];
+        r._uid = uid2;
+        r._usuario_nome = info.nome || uid2;
+        todosRels.push(r);
+      });
+    });
+    todosRels.sort(function(a,b){ return (b.ts||'').localeCompare(a.ts||''); });
+
+    if (!todosRels.length) {
+      var vz = document.createElement('div');
+      vz.className = 'vz'; vz.textContent = 'Nenhum relatório com documentos enviado ainda.';
+      relDiv.appendChild(vz);
+    } else {
+      todosRels.forEach(function(r) {
+        var div = document.createElement('div');
+        div.className = 'di';
+        div.style.cssText = 'border-color:#86efac';
+        var arqsObj = r.arquivos || {};
+        var nArqs = Object.keys(arqsObj).length;
+        div.innerHTML = '<div><h4>' + (r.nome_usuario||'') +
+          ' <span class="tag tagR">Relatório</span></h4>' +
+          '<p>' + (r.ts||'').slice(0,10) + ' · ' + nArqs + ' arquivo(s)</p></div>' +
+          '<div class="dacts">' +
+          Object.keys(arqsObj).map(function(k) {
+            var arq = arqsObj[k];
+            return '<button class="btn bp" style="padding:5px 12px;font-size:.78rem" onclick="adminBaixarArquivo('' +
+              r._uid + '','' + r.relatorio_id + '','' + k + '')">' +
+              '&#128229; ' + (arq.nome||k) + '</button>';
+          }).join('') + '</div>';
+        relDiv.appendChild(div);
+      });
+    }
+
   } catch(e) {
     lista.innerHTML = '<div class="vz" style="color:#991b1b">Erro: ' + e.message + '</div>';
   }
+}
+
+async function adminBaixarArquivo(uid2, relId, arqKey) {
+  ldgOn('Baixando arquivo...');
+  try {
+    var snap = await DB.ref('usuarios/' + uid2 + '/arquivos_relatorio/' + relId + '/arquivos/' + arqKey).once('value');
+    var arq = snap.val();
+    ldgOff();
+    if (!arq || !arq.dados) { tk('Arquivo não encontrado.', 'err'); return; }
+    var a = document.createElement('a');
+    a.href = arq.dados;
+    a.download = arq.nome || arqKey;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    tk('Download iniciado: ' + (arq.nome||arqKey), 'ok');
+  } catch(e) { ldgOff(); tk('Erro: ' + e.message, 'err'); }
 }
 
 async function adminBaixarPDF(uid, did) {
@@ -1442,6 +1533,124 @@ async function del(id,tipo){
 function limD(){if(!confirm('Limpar formulario?'))return;editD=null;diariaAtualId=null;pdfAssinadoB64=null;['d_unid','d_dept','d_matr','d_rg','d_banco','d_agenc','d_conta','d_end','d_bair','d_cida','d_cep','d_tel','d_email','d_cargo','d_vp','d_vm','d_just'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});document.getElementById('d_uf').value='MT';document.getElementById('tbP').innerHTML='';document.getElementById('tbM').innerHTML='';iP=0;iM=0;addP();addM();calcT();document.getElementById('pdf_salvo_info').style.display='none';document.getElementById('btn_enviar_profagua').style.display='none';document.getElementById('btn_excluir_pdf').style.display='none';document.getElementById('alerta_prazo').style.display='none';}
 function limR(){if(!confirm('Limpar?'))return;editR=null;['r_de','r_para','r_ini','r_fim','r_qtd','r_val','r_obj','r_coord','r_loc','comp_outros'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});['comp_passagem','comp_hotel','comp_alimentacao','comp_transporte','comp_certificado','comp_nf'].forEach(function(id){var e=document.getElementById(id);if(e)e.checked=false;});}
 
+// ============================================================
+// UPLOAD E ENVIO PARA PROFÁGUA
+// ============================================================
+
+// Mostrar lista de arquivos selecionados
+function atualizarListaUpload() {
+  var rel = document.getElementById('upload_relatorio');
+  var comp = document.getElementById('upload_comprovantes');
+  var lista = document.getElementById('upload_lista');
+  var itens = document.getElementById('upload_lista_itens');
+  var todos = [];
+  if (rel && rel.files.length) {
+    Array.from(rel.files).forEach(function(f) { todos.push('📄 ' + f.name + ' (' + (f.size/1024).toFixed(0) + 'KB)'); });
+  }
+  if (comp && comp.files.length) {
+    Array.from(comp.files).forEach(function(f) { todos.push('📎 ' + f.name + ' (' + (f.size/1024).toFixed(0) + 'KB)'); });
+  }
+  if (todos.length) {
+    lista.style.display = 'block';
+    itens.innerHTML = todos.map(function(t){ return '<div>' + t + '</div>'; }).join('');
+  } else {
+    lista.style.display = 'none';
+    itens.innerHTML = '';
+  }
+}
+
+// Converter arquivo para base64
+function fileToBase64(file) {
+  return new Promise(function(res, rej) {
+    if (file.size > 5 * 1024 * 1024) { rej(new Error('Arquivo "' + file.name + '" maior que 5MB')); return; }
+    var reader = new FileReader();
+    reader.onload = function(e) { res(e.target.result); };
+    reader.onerror = function() { rej(new Error('Erro ao ler ' + file.name)); };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function enviarParaProfAgua() {
+  if (!USER) { tk('Faça login primeiro.', 'err'); return; }
+  var relInput = document.getElementById('upload_relatorio');
+  var compInput = document.getElementById('upload_comprovantes');
+  var prog = document.getElementById('upload_progress');
+
+  if (!relInput || !relInput.files.length) {
+    tk('Selecione ao menos o relatório assinado.', 'err'); return;
+  }
+
+  // Primeiro salvar o relatório se ainda não foi salvo
+  var d = coletarR();
+  if (!validR(d)) { show('r_al', 'err'); return; }
+  hide('r_al');
+
+  ldgOn('Preparando arquivos...');
+  prog.style.display = 'block';
+
+  try {
+    // Salvar relatório no Firebase
+    var relId = editR || uid();
+    await fbSalvar('relatorios', relId, Object.assign({}, d, {id: relId, ts: new Date().toISOString()}));
+
+    // Converter e salvar arquivos
+    var arquivos = {};
+    var totalArqs = relInput.files.length + (compInput ? compInput.files.length : 0);
+    var idx = 0;
+
+    // Relatório assinado
+    for (var i = 0; i < relInput.files.length; i++) {
+      var f = relInput.files[i];
+      prog.textContent = 'Enviando ' + (++idx) + '/' + totalArqs + ': ' + f.name;
+      var b64 = await fileToBase64(f);
+      arquivos['relatorio_' + i] = {nome: f.name, tipo: f.type, dados: b64, ts: new Date().toISOString()};
+    }
+
+    // Comprovantes
+    if (compInput && compInput.files.length) {
+      for (var i = 0; i < compInput.files.length; i++) {
+        var f = compInput.files[i];
+        prog.textContent = 'Enviando ' + (++idx) + '/' + totalArqs + ': ' + f.name;
+        var b64 = await fileToBase64(f);
+        arquivos['comprovante_' + i] = {nome: f.name, tipo: f.type, dados: b64, ts: new Date().toISOString()};
+      }
+    }
+
+    // Salvar arquivos no Firebase vinculados ao relatório
+    await DB.ref('usuarios/' + USER.key + '/arquivos_relatorio/' + relId).set({
+      arquivos: arquivos,
+      nome_usuario: USER.nome,
+      cpf: USER.cpf || '',
+      ts: new Date().toISOString(),
+      relatorio_id: relId,
+      status: 'enviado'
+    });
+
+    // Atualizar relatório com flag de arquivos enviados
+    await DB.ref('usuarios/' + USER.key + '/relatorios/' + relId).update({
+      tem_arquivos: true,
+      total_arquivos: totalArqs,
+      ts_envio: new Date().toISOString()
+    });
+
+    editR = relId;
+    ldgOff();
+    prog.style.display = 'none';
+    tk('Documentos enviados com sucesso! O ProfÁgua foi notificado.', 'ok');
+    
+    // Limpar inputs
+    relInput.value = '';
+    if (compInput) compInput.value = '';
+    atualizarListaUpload();
+    renderStats();
+
+  } catch(e) {
+    ldgOff();
+    prog.style.display = 'none';
+    tk('Erro: ' + e.message, 'err');
+  }
+}
+
 var EMAILJS_SERVICE = 'service_sutafkf';
 var EMAILJS_TEMPLATE = 'template_inoo1th';
 var EMAILJS_KEY = 'taAiZImA6gXAx-iNI';
@@ -1533,6 +1742,11 @@ function novaDiaria() {
   });
   // Resetar data para hoje
   document.getElementById('d_data').value = new Date().toISOString().slice(0,10);
+  // Listeners upload
+  var upRel = document.getElementById('upload_relatorio');
+  var upComp = document.getElementById('upload_comprovantes');
+  if (upRel) upRel.addEventListener('change', atualizarListaUpload);
+  if (upComp) upComp.addEventListener('change', atualizarListaUpload);
   // Resetar status de PDF/envio
   document.getElementById('pdf_salvo_info').style.display = 'none';
   document.getElementById('btn_enviar_profagua').style.display = 'none';
