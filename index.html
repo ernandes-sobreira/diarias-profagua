@@ -1131,7 +1131,7 @@ async function carregarAdmin() {
         // linha substituida
         // removido
         // removido
-        div.innerHTML='<div><h4>'+(r._uname||'')+' <span class="tag tagR">Relatorio</span></h4><p>'+(r.ts||'').slice(0,10)+' &middot; '+nA+' arquivo(s)</p></div><div class="dacts">'+btnsHtml+'</div>';
+        div.innerHTML='<div><h4>'+(r.nome_usuario||r._uname||r._uid||'')+' <span class="tag tagR">Relatorio</span></h4><p>'+(r.ts||'').slice(0,10)+' &middot; '+nA+' arquivo(s)</p></div><div class="dacts">'+btnsHtml+'</div>';
         relCard.appendChild(div);
       });
     }
@@ -1206,6 +1206,8 @@ async function enviarParaProfagua() {
   ldgOn('Enviando e-mail para ProfÁgua...');
 
   var params = {
+    tipo_doc: 'SOLICITACAO DE DIARIAS',
+    mensagem_intro: 'O(A) discente/colaborador(a) <strong>' + (d.nome||USER.nome) + '</strong> encaminha, por meio do Sistema de Diarias ProfAgua/UNEMAT, solicitacao de pagamento de diarias referente ao mes de <strong>' + (d.mes||'') + '</strong>, devidamente assinada digitalmente.',
     nome_beneficiado: d.nome || USER.nome,
     mes_referencia: d.mes || '',
     valor_total: d.total || '',
@@ -1214,6 +1216,8 @@ async function enviarParaProfagua() {
     numero_processo: d.proc || '',
     dias_antecedencia: String(dias),
     data_saida: d._dini ? fd(d._dini) : '',
+    aviso_prazo: 'Esta solicitacao foi enviada com ' + dias + ' dias de antecedencia em relacao a data de saida prevista (' + (d._dini ? fd(d._dini) : '') + '). O prazo minimo exigido pelo Manual da FUNDUNESP e de 15 dias.',
+    rodape_doc: 'O PDF assinado esta disponivel no sistema para download pelo administrador.',
     email_beneficiado: USER.email || '',
     link_sistema: linkSistema,
     name: d.nome || USER.nome,
@@ -1582,18 +1586,18 @@ async function enviarParaProfAgua(){
     try {
       var nArqStr = Object.keys(arquivos).length + ' arquivo(s)';
       await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+        tipo_doc: 'RELATORIO DE VIAGEM ENVIADO',
+        mensagem_intro: 'O(A) discente/colaborador(a) <strong>' + (d.benef||USER.nome) + '</strong> enviou o Relatorio de Viagem pelo Sistema de Diarias ProfAgua/UNEMAT, com documentos anexados para prestacao de contas.',
         nome_beneficiado: d.benef || USER.nome,
-        mes_referencia: 'RELATORIO: ' + (d.ini||'') + ' a ' + (d.fim||''),
+        mes_referencia: (d.ini||'') + ' a ' + (d.fim||''),
         valor_total: d.val || '',
         destino: d.para || '',
-        justificativa: 'RELATORIO DE VIAGEM de ' + (d.benef||USER.nome) +
-          '. Periodo: ' + (d.ini||'') + ' a ' + (d.fim||'') +
-          '. Objetivo: ' + (d.obj||'').slice(0,150) +
-          '. Comprovantes: ' + (d.comp||'Nao informado') +
-          '. Arquivos: ' + nArqStr + '. Acesse o Admin para baixar.',
+        justificativa: 'Objetivo: ' + (d.obj||'').slice(0,200) + ' | Comprovantes: ' + (d.comp||'Nao informado') + ' | Arquivos enviados: ' + nArqStr,
         numero_processo: d.ref || '3572/2024',
         dias_antecedencia: d.qtd || '',
         data_saida: d.ini || '',
+        aviso_prazo: 'Os documentos estao disponiveis no painel Admin do sistema para download. Arquivos enviados: ' + nArqStr,
+        rodape_doc: 'Todos os arquivos do relatorio estao salvos no sistema e disponiveis para o administrador.',
         email_beneficiado: USER.email || '',
         link_sistema: 'https://ernandes-sobreira.github.io/diarias-profagua/',
         name: d.benef || USER.nome,
