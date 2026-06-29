@@ -351,10 +351,7 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
             <input type="checkbox" id="comp_nf" style="width:16px;height:16px;accent-color:#1a4f8a"/> Nota fiscal
           </label>
         </div>
-        <div class="f" style="margin-top:4px">
-          <label style="font-size:.71rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#2169c4">Outros comprovantes</label>
-          <input type="text" id="comp_outros" placeholder="Descreva outros comprovantes..." style="font-size:.93rem;border:1.5px solid #b8d0ee;border-radius:7px;padding:8px 11px;background:#f5f7fb;width:100%"/>
-        </div>
+        <input type="text" id="comp_outros" placeholder="Outros comprovantes (descreva)..." style="font-size:.93rem;border:1.5px solid #b8d0ee;border-radius:7px;padding:8px 11px;background:#f5f7fb;width:100%"/>
       </div>
     </div>
   </div>
@@ -374,17 +371,13 @@ table.tb input:focus{border-color:var(--azm);background:#f0f6ff}
   </div>
   <div class="card" style="border:2px solid #1351b4;background:#f0f4ff">
     <div class="ctit" style="color:#1351b4">&#128394; Assinatura Digital via Gov.br</div>
-    <p style="font-size:.86rem;color:#4a5a6e;margin-bottom:13px">Após salvar o relatório, baixe o Word/PDF, assine digitalmente pelo portal Gov.br e reenvie o documento assinado.</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-      <a href="https://www.gov.br/pt-br/servicos/assinatura-eletronica" target="_blank"
-         style="display:inline-flex;align-items:center;gap:8px;background:#1351b4;color:#fff;font-weight:700;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:.9rem">
-        <img src="https://www.gov.br/++theme++padrao_govbr/img/logo-govbr-colorido.png" style="height:20px" onerror="this.style.display='none'"/>
-        Acessar Assinatura Gov.br
-      </a>
-      <span style="font-size:.82rem;color:#4a5a6e">Acesso com CPF + senha ou certificado digital</span>
-    </div>
-    <div style="margin-top:11px;font-size:.82rem;color:#4a5a6e;background:#e8f0fe;border-radius:7px;padding:9px 12px">
-      <strong>Passo a passo:</strong> Salve o relatório → Baixe o Word ou PDF → Acesse o Gov.br → Selecione o arquivo → Assine → Envie para <strong>profagua@unesp.br</strong>
+    <p style="font-size:.86rem;color:#4a5a6e;margin-bottom:13px">Após salvar o relatório, baixe o Word ou PDF, assine digitalmente pelo portal Gov.br e envie para profagua@unesp.br.</p>
+    <a href="https://www.gov.br/pt-br/servicos/assinatura-eletronica" target="_blank"
+       style="display:inline-flex;align-items:center;gap:8px;background:#1351b4;color:#fff;font-weight:700;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:.9rem;margin-bottom:10px">
+      &#9997; Acessar Assinatura Gov.br
+    </a>
+    <div style="font-size:.82rem;color:#4a5a6e;background:#e8f0fe;border-radius:7px;padding:9px 12px">
+      <strong>Passo a passo:</strong> Salve → Baixe Word/PDF → Acesse Gov.br → Selecione o arquivo → Assine → Envie para <strong>profagua@unesp.br</strong>
     </div>
   </div>
   <div class="al" id="r_al">Preencha os campos obrigatorios.</div>
@@ -870,10 +863,14 @@ function validD(d){ return d.unid&&d.matr&&d.rg&&d.just; }
 
 function coletarR(){
   var comps=[];
-  var chks={comp_passagem:'Passagem (onibus/aereo)',comp_hotel:'Hospedagem/Hotel',comp_alimentacao:'Alimentacao',comp_transporte:'Transporte local',comp_certificado:'Certificado de participacao',comp_nf:'Nota fiscal'};
-  Object.keys(chks).forEach(function(id){var el=document.getElementById(id);if(el&&el.checked)comps.push(chks[id]);});
+  if(document.getElementById('comp_passagem')&&document.getElementById('comp_passagem').checked) comps.push('Passagem (onibus/aereo)');
+  if(document.getElementById('comp_hotel')&&document.getElementById('comp_hotel').checked) comps.push('Hospedagem/Hotel');
+  if(document.getElementById('comp_alimentacao')&&document.getElementById('comp_alimentacao').checked) comps.push('Alimentacao');
+  if(document.getElementById('comp_transporte')&&document.getElementById('comp_transporte').checked) comps.push('Transporte local');
+  if(document.getElementById('comp_certificado')&&document.getElementById('comp_certificado').checked) comps.push('Certificado de participacao');
+  if(document.getElementById('comp_nf')&&document.getElementById('comp_nf').checked) comps.push('Nota fiscal');
   var outros=g('comp_outros'); if(outros) comps.push(outros);
-  var comp=comps.length?comps.join(', '):'';
+  var comp=comps.join(', ');
   return {ref:g('r_ref'),proj:g('r_proj'),de:g('r_de'),para:g('r_para'),ini:fd(g('r_ini')),fim:fd(g('r_fim')),qtd:g('r_qtd'),val:brl(g('r_val')),comp:comp,obj:g('r_obj'),benef:g('r_benef'),cpf:g('r_cpf'),coord:g('r_coord'),ies:g('r_ies'),loc:g('r_loc')};
 }
 function validR(d){ return d.de&&d.para&&d.ini&&d.fim&&d.obj&&d.benef&&d.coord; }
@@ -1265,7 +1262,7 @@ async function salvarD(tipo){
   }catch(e){ ldgOff(); tk('Erro ao salvar: '+e.message,'err'); }
 }
 
-async async function salvarR(tipo){
+async function salvarR(tipo){
   var d=coletarR();
   if(!validR(d)){ show('r_al','err'); return; }
   hide('r_al');
