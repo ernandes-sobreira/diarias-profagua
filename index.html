@@ -1115,38 +1115,44 @@ async function carregarAdmin() {
         var div=document.createElement('div'); div.className='di';
         div.style.cssText='border-color:#86efac';
         var arqsObj=r.arquivos||{}; var nA=Object.keys(arqsObj).length;
-        // removido duplicata
-        var btnsHtml='';
+        // Montar card do relatório no admin
+        var infoDiv=document.createElement('div');
+        infoDiv.style.cssText='width:100%';
+        infoDiv.innerHTML='<h4 style="margin-bottom:4px;color:#0f3060">'+(r.nome_usuario||r._uid||'')+'</h4>'+
+          '<p style="font-size:.82rem;color:#4a5a6e">'+(r.ts||'').slice(0,10)+' &middot; '+nA+' arquivo(s)</p>'+
+          '<div style="display:inline-flex;align-items:center;gap:5px;background:#dcfce7;color:#166534;border-radius:6px;padding:3px 10px;font-size:.78rem;font-weight:700;margin-top:5px">&#10003; ENVIADO AO PROFÁGUA</div>';
+        div.appendChild(infoDiv);
+        // Arquivos um embaixo do outro com botão funcional
+        var arqsDiv=document.createElement('div');
+        arqsDiv.style.cssText='display:flex;flex-direction:column;gap:5px;margin-top:10px;width:100%';
         Object.keys(arqsObj).forEach(function(k){
           var arq=arqsObj[k];
-          var nm=arq.nome||''; if(!nm||nm.length<3) nm=k; var nmBase=nm.split('/').pop(); var nmEx=nmBase.length>30?nmBase.slice(0,27)+'...':nmBase;
+          var nm=arq.nome||''; if(!nm||nm.length<3) nm=k;
+          var nmBase=nm.split('/').pop().split('\\').pop();
+          var nmEx=nmBase.length>40?nmBase.slice(0,37)+'...':nmBase;
           var btn=document.createElement('button');
           btn.className='btn bp';
-          btn.style.cssText='padding:5px 11px;font-size:.78rem';
-          btn.textContent='Baixar: '+nmEx;
+          btn.style.cssText='padding:8px 12px;font-size:.83rem;text-align:left;width:100%;justify-content:flex-start';
+          btn.innerHTML='&#128229; '+nmEx;
           btn.title=nm;
           btn.onclick=(function(u2,rid,ak){return function(){adminBaixarArquivo(u2,rid,ak);};})(r._uid,r.relatorio_id,k);
-          btnsHtml+=btn.outerHTML;
+          arqsDiv.appendChild(btn);
         });
-        // linha substituida
-        // removido
-        // removido
-        var btnDel=document.createElement('button');
-        btnDel.className='brem';
-        btnDel.style.cssText='font-size:.78rem';
-        btnDel.textContent='X Excluir';
-        btnDel.onclick=(function(u2,rid){return function(){
-          if(!confirm('Excluir arquivos deste relatorio?')) return;
+        // Botão excluir
+        var btnDelR=document.createElement('button');
+        btnDelR.className='brem';
+        btnDelR.style.cssText='margin-top:6px;font-size:.79rem;padding:6px 12px';
+        btnDelR.textContent='X Excluir todos os arquivos';
+        btnDelR.onclick=(function(u2,rid){return function(){
+          if(!confirm('Excluir todos os arquivos deste relatorio?')) return;
           ldgOn('Excluindo...');
           DB.ref('usuarios/'+u2+'/arquivos_relatorio/'+rid).remove()
-            .then(function(){
-              return DB.ref('usuarios/'+u2+'/relatorios/'+rid).update({tem_arquivos:false,total_arquivos:0});
-            })
-            .then(function(){ldgOff();tk('Excluido.','ok');carregarAdmin();})
-            .catch(function(e){ldgOff();tk('Erro: '+e.message,'err');});
+            .then(function(){ return DB.ref('usuarios/'+u2+'/relatorios/'+rid).update({tem_arquivos:false,total_arquivos:0}); })
+            .then(function(){ ldgOff(); tk('Arquivos excluidos.','ok'); carregarAdmin(); })
+            .catch(function(e){ ldgOff(); tk('Erro: '+e.message,'err'); });
         };})(r._uid,r.relatorio_id);
-        div.innerHTML='<div><h4>'+(r.nome_usuario||r._uname||r._uid||'')+' <span class="tag tagR">Relatorio</span></h4><p>'+(r.ts||'').slice(0,10)+' &middot; '+nA+' arquivo(s)</p></div><div class="dacts">'+btnsHtml+'</div>';
-        div.querySelector('.dacts').appendChild(btnDel);
+        arqsDiv.appendChild(btnDelR);
+        div.appendChild(arqsDiv);
         relCard.appendChild(div);
       });
     }
@@ -1481,7 +1487,9 @@ async function renderListas(){
     document.getElementById('lstR').innerHTML=lr.length?lr.map(function(r){
       return '<div class="di"><div><h4>'+r.benef+' &gt; '+r.para+' <span class="tag tagR">Relatorio</span></h4>'+
         '<p>'+r.ini+' a '+r.fim+' | '+r.qtd+' diarias | '+r.val+'</p>'+
-        '<p style="margin-top:3px">Salvo: '+(r.ts||'').slice(0,10)+'</p></div>'+
+        '<p style="margin-top:3px">Salvo: '+(r.ts||'').slice(0,10)+'</p>'+
+        (r.tem_arquivos ? '<div style="display:inline-flex;align-items:center;gap:6px;background:#dcfce7;color:#166534;border-radius:6px;padding:4px 12px;font-size:.85rem;font-weight:700;margin-top:5px">&#10003; ENVIADO AO PROFÁGUA</div>' : '')+
+        '</div>'+
         '<div class="dacts">'+
         '<button class="btn bp" style="padding:6px 12px;font-size:.79rem" onclick="editarR(\''+r.id+'\')">&gt; Editar</button>'+
         '<button class="btn bp" style="padding:6px 12px;font-size:.79rem;background:#2169c4" onclick="wdR(\''+r.id+'\')">&gt; Word</button>'+
