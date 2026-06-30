@@ -1130,13 +1130,41 @@ async function carregarAdmin() {
           var nm=arq.nome||''; if(!nm||nm.length<3) nm=k;
           var nmBase=nm.split('/').pop().split('\\').pop();
           var nmEx=nmBase.length>40?nmBase.slice(0,37)+'...':nmBase;
+          var linha=document.createElement('div');
+          linha.style.cssText='display:flex;gap:6px;align-items:stretch';
           var btn=document.createElement('button');
           btn.className='btn bp';
-          btn.style.cssText='padding:8px 12px;font-size:.83rem;text-align:left;width:100%;justify-content:flex-start';
+          btn.style.cssText='padding:8px 12px;font-size:.83rem;text-align:left;flex:1;justify-content:flex-start';
           btn.innerHTML='&#128229; '+nmEx;
           btn.title=nm;
           btn.onclick=(function(u2,rid,ak){return function(){adminBaixarArquivo(u2,rid,ak);};})(r._uid,r.relatorio_id,k);
-          arqsDiv.appendChild(btn);
+          var btnX=document.createElement('button');
+          btnX.className='brem';
+          btnX.style.cssText='padding:8px 10px;font-size:.83rem;flex-shrink:0';
+          btnX.textContent='X';
+          btnX.title='Excluir apenas este arquivo';
+          btnX.onclick=(function(u2,rid,ak,nmArq){return function(){
+            if(!confirm('Excluir apenas o arquivo \''+nmArq+'\'?')) return;
+            ldgOn('Excluindo arquivo...');
+            DB.ref('usuarios/'+u2+'/arquivos_relatorio/'+rid+'/arquivos/'+ak).remove()
+              .then(function(){
+                return DB.ref('usuarios/'+u2+'/arquivos_relatorio/'+rid+'/arquivos').once('value');
+              })
+              .then(function(snap){
+                var restantes=snap.val()||{};
+                var totalRestante=Object.keys(restantes).length;
+                if(totalRestante===0){
+                  return DB.ref('usuarios/'+u2+'/relatorios/'+rid).update({tem_arquivos:false,total_arquivos:0});
+                } else {
+                  return DB.ref('usuarios/'+u2+'/relatorios/'+rid).update({total_arquivos:totalRestante});
+                }
+              })
+              .then(function(){ldgOff();tk('Arquivo excluido.','ok');carregarAdmin();})
+              .catch(function(e){ldgOff();tk('Erro: '+e.message,'err');});
+          };})(r._uid,r.relatorio_id,k,nmEx);
+          linha.appendChild(btn);
+          linha.appendChild(btnX);
+          arqsDiv.appendChild(linha);
         });
         // Botão excluir
         var btnDelR=document.createElement('button');
